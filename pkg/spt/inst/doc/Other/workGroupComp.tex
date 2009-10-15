@@ -1,0 +1,328 @@
+
+\documentclass[12pt]{article}
+\title{Thoughts on Spatiotemporal \\
+  Data Standards in R}
+\author{Blair Christian\\
+\texttt{blair.christian@gmail.com}}
+\date{}
+
+\usepackage{natbib,hyperref,fullpage,amsmath}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+
+\begin{document}
+\maketitle
+
+\section*{Introduction}
+Spatiotemporal data is any set of observations which have space and
+time components.  There are rich tool kits in R for working on either
+spatial or temporal data, but few which support spatiotemporal data.
+Currently, it is necessary to manually slice and dice your
+spatiotemporal data in order to apply these existing R tools.  This
+lack of infrastructure in the S4 object sense has greatly hindered the
+use and development of spatiotemporal modeling.  This is a proposal
+to add a small amount of structure in the form of S4 objects in order
+to leverage the existing spatial and temporal packages in R in a
+seamless manner, in addition to creating an environment conducive to
+code reuse.  I am thinking about this with a possible future endpoint in
+the spirit of \href{http://www.bioconductor.org}{bioconductor} or \href{http://www.rmetrics.org/}{Rmetrics}.  I'll
+put a copy of this up on an informal website,
+\href{http://www.isds.duke.edu/~jbc30/SpatioTemporal/}{http://www.isds.duke.edu/~jbc30/SpatioTemporal/}
+and move it to \href{http://r-forge.r-project.org}{R-forge} as we develop
+this.  
+
+
+\section*{Audience}
+
+\subsection*{End User}
+As an end user, some use cases include loading the data one time, then
+calling one or more models from one or more packages.  For example,
+being able to run both, say, spBayes models and INLA models, in order
+to compare various computational and model properties.  (eg
+performance in practice, comparison of predictive errors or other
+quantities of interest)
+
+
+\subsection*{Model Maker}
+As a model maker, I don't want to reinvent the wheel.  If other
+packages provide adequate functions for some needed algorithm, a data
+standard should help especially in pre and possibly in post
+processing. 
+
+\subsection*{Data Provider}
+As a data provider, one would like to provide data in an easy to
+obtain, easy to work with and be easy to cite.  With Amy Braverman's
+comments in mind from
+\href{http://www.samsi.info/workshops/2009spatial-opening200909.shtml}{the
+  recent SAMSI conference}, if NASA could provide data access similar to the
+\href{http://www.ncbi.nlm.nih.gov/Entrez/}{NIH's entrez system}.
+(something in process now, they have
+\href{http://www-misr.jpl.nasa.gov/mission/data/getdata.html}{almost 4 Pb
+  of imaging data at NASA}, most of which isn't currently available.
+Metadata allowing the data provider room for descriptions of how the
+data were collected, who to contact with questions, a website for more
+information and a citation for using the data also 
+
+
+To summarize the benefits of a spatiotemporal classes and methods:
+
+\begin{itemize}
+\item Reproducible data analysis (see the
+  \href{http://www.bioconductor.org/docs/faq/index.html#Documentation\%20and\%20reproducible\%20research}{bioconductor
+  policy} of R's \href{http://www.bioconductor.org}{bioconductor project})
+\item increase code reuse
+\item increase productivity
+\item possibility for better context/information for datasets (a metadata requirement)
+\end{itemize}
+
+
+
+\section*{Spatiotemporal Data Standards}
+
+Some general needs for a data representation include:
+
+\begin{itemize}
+\item data import from flat files or relational database
+\item structure for metadata (see bioconductor)
+\begin{itemize}
+\item creator, maintainer, location on web, contact info,
+algorithm/satellite used, dates, original purpose/funding,
+citation of data 
+\end{itemize}
+\item change of support tools, foe example applied to upscaling/downscaling
+\begin{itemize}
+\item (methods for sp, which could then be extended to spatiotemporal)
+\end{itemize}
+\item registration?
+\item data export and visualization
+\begin{itemize}
+\item export in kml format for portability
+\item google maps, for example see
+  \href{http://googlemapsmania.blogspot.com/2009/04/swine-flu-outbreak-on-google-maps.html}{swine
+  flu tracker}
+\item other types of visualization relevant for data, eg trip library
+  for following the trips of tagged animals
+\item
+  \href{http://www.isds.duke.edu/~jbc30/Presentations/movie.gif}{generic
+  movie showing how grid data- kriging results in this example- change
+  over time}, via the animation package \citep{xie09}
+\end{itemize}
+
+\item Methods for accessing data
+\begin{itemize}
+\item time series by location
+\item spatial data at a time
+\item function of all spatial or all temporal (eg mean, max, etc) at a
+  given location/time (again, something that could be implemented for
+  Spatial class and inherited by a spatiotemporal class)
+\end{itemize}
+
+
+\end{itemize}
+
+There are a few assumptions I have been making, including:
+\begin{itemize}
+\item R is the right place
+\item can handle big datasets (with out of core/db storage)
+\item easier/more convenient to call ``real'' code in C/fortran, etc
+  from R than rolling ones own
+\end{itemize}
+
+
+There are some risks
+\begin{itemize}
+\item too much structure
+\item too hard to use
+\item audience not ready to adopt (not seen as a problem yet)
+\end{itemize}
+
+\subsection*{Types of Spatiotemporal Data}
+The combinatorics of spatiotemporal data are large, and may increase with
+change of support methods.  I really don't have any idea what the best
+way to proceed here is, but I have a few stabs that aren't so
+elegant.  Thoughts?  What do you want supported asap on the spatial
+side?  temporal side?
+
+I have one set of thoughts about the high level design (see section below)
+\begin{itemize}
+\item store data in 3 parts, link with unique identifiers; spatial, temporal, data observations
+\item spatial extends/implements Spatial in sp package
+  \citep{pebesma05}
+\item temporal part extends/implements a time series or fda or splines
+  or $\ldots$ package
+\end{itemize}
+
+There is a bit of existing code that should serve as some
+representation of the need for spatiotemporal data in different areas:
+\begin{itemize}
+\item spBayes \citep{finley09},
+  \href{http://www.math.ntnu.no/~hrue/inla/}{inla} (example of models
+  sharing input format that could be compared)
+\item geoR \citep{ribeiro01}, fields \citep{furrer09}, etc (retrieve those spatial objects at a given time)
+\item tseries, fda \citep{ramsay09}, its \citep{its09}, zoo
+  \citep{zeileis05}, xts \citep{ryan09} etc (retrieve those temporal objects at a given location)
+\item leverage code (eg bioBase \citep{gentleman04})- if there's a package for spatial epi
+that is useful (eg trip \citep{sumner09}), then we should embrace code reuse instead of
+reinventing the wheel 
+\end{itemize}
+
+\subsection*{Wishlists}
+Here are some thoughts that are random and not comprehensive.  Email
+me to add some.
+
+\subsubsection*{Short Term Wishlist}
+\begin{itemize}
+\item focus on data storage
+\begin{itemize}
+\item easy to store
+\item easy to retrieve
+\item some basic EDA for spatiotemporal
+\begin{itemize}
+\item movies
+\item standard epi plot over time? (epi spatial package?)
+\item seamless spatial views at time
+\item seamless temporal views at location
+\end{itemize}
+\end{itemize}
+\item S4 classes and methods
+\item aid dissemination (google maps display)
+\item export to standard format (kmz? for google maps, GRASS, arcGIS, $\ldots$)
+\item examples?
+\item vignette?
+\item start small? (regular point/grid?)
+\end{itemize}
+
+
+\subsubsection*{Long Term Wishlist}
+\begin{itemize}
+\item database support for massive (out of core) datasets
+\item advice to data providers (eg NASA, EPA, etc) for online data access (see NIH stuff, entrez)
+\item people who's advice I would like from an OO + R perspective: Bioconductor team (Seth Falcon?
+bioBase authors?); Dirk Eddelbuettel; Dough Bates; whoever reads this far $\ldots$
+\end{itemize}
+
+
+
+\section*{Example Class}
+
+An example starting place
+
+I'm working with monitoring data at the EPA right now for 1-3
+gasses.  Some sites only monitor 1 gas at one set of intervals (say,
+hourly).  Another, overlapping set of sites measures other gasses at
+other intervals (say, every three days).  From this data, I use a
+variety of kriging and related methods to interpolate and predict gas
+levels at locations in between the sites, and at future points in
+time.  The approaches I'm using are pretty much out of the
+\citet{banerjee2004hma}, so a
+big assumption is separability in temporal and spatial covariances.
+In my case, space is treated as continuous and I'll be treating time
+as regular for now.  My classes will be focused only on this in the
+short term. I'll put up some info on the classes I use next week or
+the week after for those of you who are interested. 
+
+
+
+Here are some first thoughts at a very general (eg "sp" library
+    type) approach to classes for spatiotemporal data.  Please let me
+    know if I have made any gross mistakes here- it's been a long
+    while since I played with S4 classes.  My first thoughts are to
+    have a main class, SpatialTemporalDataFrame, which has a unique
+    set of spatial objects, a unique set of temporal objects, and a
+    dataframe with the data that maps to a unique spatial location and
+    time.  My first go is something like this:
+
+
+
+
+\begin{verbatim}
+
+## unique set of spatial locations
+##
+## basically a container for one or more points or polygons
+##
+## eg something from the sp package,
+##    such as SpatialPoints, SpatialPixels, SpatialPolygons
+library(sp)
+setClass("stSpace",
+         representation(s.id="integer",
+                        location="Spatial"))
+
+validstSpaceObject <- function(object) {
+  if(length(object@s.id) == length(object@location)) TRUE
+  else paste("Unequal s.id, location lengths: ", length(object@s.id), ", ",
+             length(object@location), sep="")
+}
+## assign the function as the validity method for the class
+setValidity("stSpace", validstSpaceObject)
+
+
+## I guess you could make it something like a
+## SpatialPointsDataFrame, and put the unique ID in the data frame?
+## but for generality, it would be nice to have a matching structure below
+## for the time part
+
+
+## unique set of time stamps
+## basically a container for a time and date stamp.
+library(timeDate)
+setClass("stTime",
+         representation(t.id="integer",
+                        timedate="timeDate"))
+
+validstTimeObject <- function(object) {
+  if(length(object@t.id) == length(object@timedate)) TRUE
+  else paste("Unequal t.id, timedate lengths: ", length(object@t.id), ", ",
+             length(object@timedate), sep="")
+}
+## assign the function as the validity method for the class
+setValidity("stTime", validstTimeObject)
+
+
+## a dataframe subsettable by (unique) spatial and/or temporal ids
+setClass("stDataFrame",
+         representation(s.id="integer",
+                        t.id="integer",
+                        df="data.frame"))
+
+
+## Seems like these should all be virtual classes?
+##
+## basically a mini relational database
+## possibly stored that way in the future for large datasets
+## see: RSQLite, RSQLiteMap packages
+setClass("SpatialTemporalDataFrame",
+         representation(spatial="stSpace",
+                        temporal="stTime",
+                        data="stDataFrame",
+			metadata="list"))
+
+\end{verbatim}
+
+%\begin{figure}
+%\begin{center}\includegraphics[  width=4in,
+%  height=3in]{network}\end{center}
+
+%\begin{center}Figure 1: Campus Networks (Unix)\end{center}
+%\end{figure}
+
+
+%\begin{figure}[h]
+%  \begin{center}
+%    \includegraphics[scale=0.3,angle=0]{mid.eps}
+%    \includegraphics[scale=0.3,angle=0]{nwCond.eps}\\
+%    \includegraphics[scale=0.3,angle=0]{nwWeights.eps}
+%    \includegraphics[scale=0.3,angle=0]{nwCondWeight.eps}
+
+%    \caption{Regular, Conditioning, Weighting, Conditioning and Weighting}
+%  \end{center}
+%\end{figure}
+
+\section*{Conclusion}
+Thoughts?
+
+\bibliography{spatial}
+\bibliographystyle{plainnat}
+
+
+\end{document}

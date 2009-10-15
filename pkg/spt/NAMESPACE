@@ -1,0 +1,6 @@
+exportPattern("^[[:alpha:]]+")
+import(sp)
+import(timeDate)
+import(fda)
+importFrom(nlme, gapply)
+importFrom(RCurl, getForm, postForm)
