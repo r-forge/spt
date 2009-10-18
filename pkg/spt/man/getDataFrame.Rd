@@ -3,17 +3,18 @@
 \alias{getDataFrame}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+Gets data frame from a SpatialTemporalDataFrame or stDataFrame object
 }
 \description{
-%%  ~~ A concise (1-5 lines) description of what the function does. ~~
+Gets data frame from a SpatialTemporalDataFrame or stDataFrame object.  Returns the
+data, unique spatial ids and unique temporal ids.
 }
 \usage{
 getDataFrame(x)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{
+  \item{x}{ object of class SpatialTemporalDataFrame or stDataFrame 
 %%     ~~Describe \code{x} here~~
 }
 }
@@ -21,6 +22,8 @@ getDataFrame(x)
 %%  ~~ If necessary, more details than the description above ~~
 }
 \value{
+  \item{df} {a data.frame with 3 or more columns; a unique spatial id, a
+  unique temporal id, and one or more columns of observed values}
 %%  ~Describe the value returned
 %%  If it is a LIST, use
 %%  \item{comp1 }{Description of 'comp1'}
@@ -28,6 +31,7 @@ getDataFrame(x)
 %% ...
 }
 \references{
+  \url{http://spt.r-forge.r-project.org}
 %% ~put references to the literature/web site here ~
 }
 \author{

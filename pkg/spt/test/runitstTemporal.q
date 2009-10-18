@@ -31,7 +31,6 @@ test.stUpdate <- function(){
   checkTrue( validObject(tmp.up))
 }
 
-
 test.stSubset <- function(){
   testClassName <- "stTemporal"
   tmp <- stTemporal(timeVals=c("2008-09-29","2009-01-14","2012-12-12"),format="%Y-%m-%d")
