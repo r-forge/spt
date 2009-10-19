@@ -1,6 +1,6 @@
 
 \documentclass{article}
-\usepackage{graphicx}
+\usepackage{graphicx,fullpage}
 \usepackage[colorlinks=true,urlcolor=blue]{hyperref}
 
 \usepackage{color}
@@ -12,7 +12,7 @@
 \title{ S4 Classes and Methods for Spatiotemporal Data:\\
 the {\tt spt} Package }
 \author{J. Blair Christian\footnote{US EPA,
-Research Triangle Park, NC {\tt blair.christian@gmail.com}}}
+Research Triangle Park, NC, \texttt{ blair.christian@gmail.com}}}
 \date{15 October 2009}
 
 \begin{document}
@@ -24,7 +24,7 @@ Research Triangle Park, NC {\tt blair.christian@gmail.com}}}
 Note: This vignette was directly copied from the sp package, then
 edited.  Hopefully they will see this as flattery...
 
-The {\tt spt} package provides S4 classes and methods for dealing with
+The \texttt{ spt} package provides S4 classes and methods for dealing with
 spatiotemporal data in S (R and S-Plus\footnote{our primary efforts target R;
 depending on the needs, we will address S-Plus as well}). The spatiotemporal
 data structures implemented currently include points, with support for
@@ -35,8 +35,8 @@ created. Although we mainly aim at using spatiotemporal data in the geographical
 implementation in higher dimensions (points, grids) do allow this.
 
 The motivation to write this package was born from my work at the EPA as
-a postdoc along with \href{the SAMSI program on Spatiotemporal
-  analysis}{http://www.samsi.info/programs/2009spatialprogram.shtml}
+a postdoc along with \href{http://www.samsi.info/programs/2009spatialprogram.shtml}{the SAMSI program on Spatiotemporal
+  analysis}
 where I had the privilege to be a party crasher.  At this time, there
 are no packages with broad support for spatiotemporal data, however
 there are various associated 
@@ -53,7 +53,7 @@ to any of these types. Also, coercion (type casting) from one class to
 the other is provided sparsely, where relevant.  If something isn't
 provide, please request it from the author(s).
 
-Package {\tt spt} is installed by 
+Package \texttt{ spt} is installed by 
 %% chunk 1
 
 <<echo=TRUE,print=FALSE,eval=FALSE>>= 
@@ -63,10 +63,10 @@ install.packages("spt", repos="http://R-forge.R-project.org")
 Currently, I put a lot of dependencies and they're not all necessary
 now (especially the suggested packages).  
 
-Package {\tt spt} is loaded by 
+Package \texttt{spt} is loaded by 
 %% chunk 2
 
-<<echo=TRUE,print=TRUE>>= 
+<<echo=TRUE,print=FALSE,eval=FALSE>>= 
 library(spt)
 @
 
@@ -151,7 +151,7 @@ Example: create, get,
 
 %% chunk 5
 
-<<echo=TRUE,print=FALSE>>= 
+<<echo=TRUE,print=FALSE,eval=TRUE>>= 
 n <- 10 # num points
 d <- 2  # dimension
 crd <- matrix(runif(n*d),n,d)
@@ -190,16 +190,24 @@ time to fully go into them yet (short on time)....
 
 %% chunk 7
 
-<<echo=TRUE,print=FALSE>>= 
+<<echo=TRUE,print=TRUE,eval=TRUE>>= 
 pollutant <- "Oz"
 state <- c("SC","NC")
 startDate <- "2007-01-01"
 endDate <- "2007-01-30"
 tmp <- getEPAAirExplorerData(pollutant, state, startDate, endDate)
 tmp
-plot(tmp)
 @
+<<echo=TRUE, eval=FALSE>>=
+plot(tmp)
+@ 
 
+\begin{figure}
+  \begin{center}
+  \includegraphics{ozoneNcSc.pdf}
+  \end{center}
+  \caption{Top: Plots of ozone concentrations at the 3 stations with no missing data; Bottom: legend, color of top time plots corresponds to spatial location in legend}
+\end{figure}
 
 \section*{Performance}
 
@@ -224,23 +232,26 @@ No ambitious project would be complete without feature requests.
   (creation, accessing, subsetting, joining, applying, 
 \item Support for Spatiotemporal data (grids, lines, polygons)
 \item Data retrieval from website forms from \href{EPA's air
-    explorer}{http://www.epa.gov/cgi-bin/htmSQL/mxplorer/query_daily.hsql?poll=42101&msaorcountyName=1&msaorcountyValue=1}
+    explorer}{http://www.epa.gov/cgi-bin/htmSQL/mxplorer/}
   (working, 0.01-01) and \href{Avian Knowledge Network}{http://www.avianknowledge.net/akntools/download}. 
 \item RUnit is used to maintain quality control by providing a testing
   framework.  (v0.01-01).  Can be provided upon request until I put it
   into the test dir of the package. (haven't figured out yet).
 \item interfaces to \texttt{spBayes} and \texttt{INLA} packages
- \end{itemize}
+\item periodicity (as in the xts library context)
+\end{itemize}
 
  
  
 \subsection*{Proposed Version 2.0 Features}
 \begin{itemize}
 \item Support for larger data sets (both on the storage/access side
-  as well as the computation side).
+  as well as the computation side)  On the storage side, perhaps
+  database storage for some/all obs/objects, and on the computation
+  side perhaps a way to pass to C or C++.
 \item More data access capabilities
 \item interfaces to \texttt{openair} and \texttt{trip} packages
-\item
+\item support to coerce timeDate to class xts
 \end{itemize}
 
  
