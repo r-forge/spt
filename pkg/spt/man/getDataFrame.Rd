@@ -1,16 +1,18 @@
-\name{getDataFrame}
+\name{getDataFrame, setDataFrame}
 \Rdversion{1.1}
 \alias{getDataFrame}
-%- Also NEED an '\alias' for EACH other topic documented here.
+\alias{setDataFrame}
+
 \title{
-Gets data frame from a SpatialTemporalDataFrame or stDataFrame object
+Gets/sets data frame from a SpatialTemporalDataFrame or stDataFrame object
 }
 \description{
-Gets data frame from a SpatialTemporalDataFrame or stDataFrame object.  Returns the
+Gets/sets the data frame from a SpatialTemporalDataFrame or stDataFrame object.  Output/input the
 data, unique spatial ids and unique temporal ids.
 }
 \usage{
 getDataFrame(x)
+setDataFrame(x) <- df
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -24,28 +26,10 @@ getDataFrame(x)
 \value{
   \item{df} {a data.frame with 3 or more columns; a unique spatial id, a
   unique temporal id, and one or more columns of observed values}
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
 }
-\references{
-  \url{http://spt.r-forge.r-project.org}
-%% ~put references to the literature/web site here ~
-}
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
-
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
+\references{  \url{http://spt.r-forge.r-project.org} }
+\author{ J. Blair Christian, \email{blair.christian@gmail.com} }
+\seealso{  \code{\link{}}}
 \examples{
 ##---- Should be DIRECTLY executable !! ----
 ##-- ==>  Define data, use random,

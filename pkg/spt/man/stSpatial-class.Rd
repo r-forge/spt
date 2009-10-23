@@ -1,6 +1,14 @@
 \name{stSpatial-class}
 \docType{class}
 \alias{stSpatial-class}
+\alias{show, stSpatial-method}
+\alias{summary, stSpatial-method}
+\alias{getDataFrame, stSpatial-method}
+\alias{, stSpatial-method}
+\alias{, stSpatial-method}
+
+
+
 \alias{Spatial}
 \alias{print.summary.Spatial}
 \alias{summary,Spatial-method}
@@ -28,8 +36,8 @@
 }
 \section{Methods}{
   \describe{
-    \item{}{\code{signature(obj = "")}:  }
-    \item{}{\code{signature(obj = "")}:  }
+    \item{show}{\code{signature(obj = "")}:  }
+    \item{plot}{\code{signature(obj = "")}:  }
     \item{}{\code{signature(obj = "")}:  }
     \item{}{\code{signature(obj = "")}:  }
     \item{}{\code{signature(obj = "")}:  }
