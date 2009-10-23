@@ -22,7 +22,7 @@ setMethod("getSpatialPoints", signature(x="SpatialTemporalDataFrame"),
 setMethod("getTid", signature(x="SpatialTemporalDataFrame"),
           function(x) return(x@temporal@t.id) )
 setMethod("getTimedatestamps", signature(x="SpatialTemporalDataFrame"),
-          function(x)return( x@temporal@timedatestamps))
+          function(x,format="%Y-%m-%d")return( getTimedatestamps(x@temporal,format)))
 setMethod("getDataFrame", signature(x="SpatialTemporalDataFrame"),
           function(x)return( x@data@df) )
 setMethod("getstSpatial",signature(x="SpatialTemporalDataFrame"),
@@ -108,6 +108,7 @@ setMethod("plot", signature(x="SpatialTemporalDataFrame", y="character"),
                 if (returnbColor)
                   return(bColor)
               }
+#              browser()
               coords <- as.data.frame(getSpatialPoints(x))
               lat.breaks  <- 51
               long.breaks <- 51
@@ -131,18 +132,18 @@ setMethod("plot", signature(x="SpatialTemporalDataFrame", y="character"),
               }
               t <- length(getTid(x))
               fdargvals <- as.numeric(difftime( getTimedatestamps(x), min(getTimedatestamps(x)), units=units))
-              fb <- create.fourier.basis( c(0,t), ceiling(2*t/3))
+#              fb <- create.fourier.basis( c(0,t), ceiling(2*t/3))
+              fb <- create.fourier.basis( c(0,t), 9)
               tByS <- getTimeBySpaceMat(x,y)
-              ## Have to remove columns with more than 50% missing data to get the plot to work right.
+              ## Have to remove columns with more than 0% missing data to get the plot to work right.
               tooManyMissing <- which(apply( apply(tByS, 2, is.na), 2, sum) > 0)
               tByS <- tByS[, -tooManyMissing ]
               bColors <- bColors[  -tooManyMissing ]
-              if (tooManyMissing > 0) {
+              if ( length(tooManyMissing) > 0) {
                 print(paste("There are",length(tooManyMissing),"stations with missing data"))
                 print(paste("which will not be shown.  That is",100*round(length(tooManyMissing)/n.s,3),"% of the sites"))
-              }
-              
-              ofd <- Data2fd( argvals=fdargvals,  y=tByS, basis=fb, )
+              }              
+              ofd <- Data2fd( argvals=fdargvals,  y=tByS, basis=fb )
               plot(ofd, col=bColors, ylim=range(getDataFrame(x)[y]), lty=1, xlab=paste("Time (",units,")",sep=""),ylab=y)              
             }
           }

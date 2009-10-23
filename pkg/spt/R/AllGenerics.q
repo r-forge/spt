@@ -45,7 +45,7 @@ setGeneric("getTid", function(x){ standardGeneric("getTid")})
 setGeneric("getTimedatestamps", function(x, ...){ standardGeneric("getTimedatestamps")})
 ##setGeneric("getTimeByFormat", function(x, format){ standardGeneric("getTimeByFormat")}) ## DEPRECATED
 
-setGeneric("getDataFrame", function(x){ standardGeneric("getDataFrame")})
+setGeneric("getDataFrame", function(x,...){ standardGeneric("getDataFrame")})
 
 setGeneric("getstTemporal", function(x){ standardGeneric("getstTemporal")})
 setGeneric("getstSpatial", function(x){ standardGeneric("getstSpatial")})

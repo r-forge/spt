@@ -11,7 +11,15 @@ validstSpatialPointsObject <- function(object) {
 ## assign the function as the validity method for the class
 setValidity("stSpatialPoints", validstSpatialPointsObject)
 setMethod("show","stSpatialPoints",
+          function(object)return( getDataFrame(object)) )
+
+setMethod("summary","stSpatialPoints",
           function(object){cat("A collection of",length(object@s.id),"points.\n") } )
+
+setMethod("getDataFrame", signature(x="stSpatialPoints"),
+          function(x) return( data.frame(sid=x@s.id, locations=coordinates(x) )) 
+        )
+
 
 ## Constructor
 stSpatialPoints <- function(coords, bbox=matrix(NA), proj4string = CRS(as.character(NA)), s.id=as.integer(1:nrow(coords)) ){
@@ -67,7 +75,11 @@ setMethod("stSubset", signature(x="stSpatialPoints", bounds="integer"),
               x@coords <- t(as.matrix(x@coords[new.members,]))
             } else {
               x@coords <- x@coords[new.members,]
+              x@bbox <- cbind( apply( coordinates(x), 2, min,na.rm=TRUE),
+                               apply( coordinates(x), 2, max,na.rm=TRUE) )
             }
+            colnames(x@bbox) <- c("min","max")
+            rownames(x@bbox) <- colnames( coordinates(x) )
             return( x )
           }
           )
@@ -97,6 +109,9 @@ setMethod("stSubset", signature(x="stSpatialPoints", bounds="matrix"),
             new.members <- which( apply(coordinates(x), 1, inside, bounds))
             ## Fix adjust bbox to be correct?
             ## Fix: figure out the numeric/matrix issue...
+            x@bbox <- t(bounds)
+            colnames(x@bbox) <- c("min","max")
+            rownames(x@bbox) <- colnames( coordinates(x))
             if (length(new.members)==1) {
               return( stSpatialPoints(x@s.id[new.members], coords=t(as.matrix(coordinates(x)[new.members,])),
                                       bbox=x@bbox, proj4string=x@proj4string) )
@@ -117,12 +132,15 @@ setMethod("stUpdate",c(st="stSpatialPoints", new.id="integer"),
             ## TBD update bounding box
             if (length(new.members)==1){
               st@coords <- t(as.matrix(coordinates(st)[new.members,]))
+              st@bbox <- rbind( coordinates(st)[1], coordinates(st)[2])
             } else {
               st@coords <- coordinates(st)[new.members,]
+              st@bbox <- cbind( apply( coordinates(st), 2, min,na.rm=TRUE),
+                               apply( coordinates(st), 2, max,na.rm=TRUE) )
             }
+            colnames(st@bbox) <- c("min","max")
+            rownames(st@bbox) <- colnames( coordinates(st))
             st@s.id <- new.s.id
-            gc()
-            
             return( st )
           }
           )
@@ -133,9 +151,15 @@ setMethod("stDist", signature(sp="SpatialPoints", type="character"),
           function(sp, type) {
             require(fields)
             if ( type == "euclidean" ){
-              rdist(coordinates(sp))
+              dst <- rdist(coordinates(sp))
+              colnames(dst) <- getSid(sp)
+              rownames(dst) <- getSid(sp)
+              return(dst)
             } else if ( type =="earth" ) {
-              rdist.earth(coordinates(sp))
+              dst <- rdist.earth(coordinates(sp))
+              colnames(dst) <- getSid(sp)
+              rownames(dst) <- getSid(sp)
+              return(dst)
             } else {
               stop("distance type can only be 'euclidean' or 'earth' ")
             }

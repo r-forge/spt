@@ -15,13 +15,15 @@ validstTemporalObject <- function(object) {
     paste("The class of t.id must be 'integer', was given as '",class(object@t.id),"'",sep="")
   if ( !identical( class(object@timedatestamps)[[1]], "timeDate") )
     paste("The class of timedatestamps must be 'timeDate', was given as '",class(object@timedatestamps),"'",sep="")
-  
-
+  return(TRUE)
 }
-
 setValidity("stTemporal", validstTemporalObject)
+
 setMethod("show", "stTemporal",
-          function(object){cat("A vector of timeDates of length",length(object@t.id),".\n") } )
+          function(object) return( getDataFrame(object))  )
+
+setMethod("summary", "stTemporal",
+          function(object){cat("A vector of timeDates of length",length(object@t.id),"\n") } )
 
 ## Getters
 setMethod("getTid", signature(x="stTemporal"),
@@ -30,6 +32,9 @@ setMethod("getTid", signature(x="stTemporal"),
 setMethod("getTimedatestamps", signature(x="stTemporal"),
           function(x, format="%Y-%m-%d")return( format(x@timedatestamps, format=format)))
 
+setMethod("getDataFrame", signature(x="stTemporal"),
+          function(x,format="%Y-%m-%d") return( data.frame(tid=x@t.id, timedatestamps=format(x@timedatestamps,format)) )
+        )
 
 ## Deprecated; moved to getTimedatestamps
 #### Given a format string, return the t.id which match it?
@@ -140,6 +145,8 @@ setMethod("stDist", c(sp="stTemporal",type="character"),
                 td.dist[j,i] <- td.dist[i,j] <- difftimeDate(sp@timedatestamps[i], sp@timedatestamps[j], units=type)
               }
             }
+            colnames(td.dist) <- getTid(sp)
+            rownames(td.dist) <- getTid(sp)
             return(td.dist)
           }
           )
