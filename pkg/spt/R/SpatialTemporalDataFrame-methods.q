@@ -38,8 +38,6 @@ setMethod("show", "SpatialTemporalDataFrame",
           )
 setMethod("getTimeBySpaceMat", signature(st="SpatialTemporalDataFrame", colname="character"),
           getTimeBySpaceMat <- function(st,colname){
-            ## FIX TBD
-            ## Assumes that time is stored in order????
             n.t <- length(getTid(st))
             n.s <- length(getSid(st))
             dens <- matrix(NA, nrow= n.t, ncol=n.s)
@@ -55,12 +53,16 @@ setMethod("getTimeBySpaceMat", signature(st="SpatialTemporalDataFrame", colname=
                 }
               }
             }
+            ## Quickly make sure it's in order, swapping rows as necessary.
+            class(dens)
+            timeOrder <- order( getTimedatestamps(st,"%Y-%m-%d %H:%M"))
+            dens <- dens[timeOrder,]
             return(dens)
           }
           )
 
 setMethod("plot", signature(x="SpatialTemporalDataFrame", y="character"),
-          function(x,y,units) {
+          function(x,y,units,plotType="fda",browse=FALSE) {
             if ( class(x@spatial) == "stSpatialPoints"){
               getGridCell <- function( pnt, xlims, ylims, x.len, y.len){
                 ## return which entry of a gridded vector a value falls in
@@ -108,7 +110,8 @@ setMethod("plot", signature(x="SpatialTemporalDataFrame", y="character"),
                 if (returnbColor)
                   return(bColor)
               }
-#              browser()
+              if (browse)
+                browser()
               coords <- as.data.frame(getSpatialPoints(x))
               lat.breaks  <- 51
               long.breaks <- 51
@@ -130,21 +133,39 @@ setMethod("plot", signature(x="SpatialTemporalDataFrame", y="character"),
                 la <- loc[2]
                 bColors[i] <- bColor[lo, lat.breaks-la+1]
               }
-              t <- length(getTid(x))
-              fdargvals <- as.numeric(difftime( getTimedatestamps(x), min(getTimedatestamps(x)), units=units))
-#              fb <- create.fourier.basis( c(0,t), ceiling(2*t/3))
-              fb <- create.fourier.basis( c(0,t), 9)
               tByS <- getTimeBySpaceMat(x,y)
-              ## Have to remove columns with more than 0% missing data to get the plot to work right.
-              tooManyMissing <- which(apply( apply(tByS, 2, is.na), 2, sum) > 0)
-              tByS <- tByS[, -tooManyMissing ]
-              bColors <- bColors[  -tooManyMissing ]
-              if ( length(tooManyMissing) > 0) {
-                print(paste("There are",length(tooManyMissing),"stations with missing data"))
-                print(paste("which will not be shown.  That is",100*round(length(tooManyMissing)/n.s,3),"% of the sites"))
-              }              
-              ofd <- Data2fd( argvals=fdargvals,  y=tByS, basis=fb )
-              plot(ofd, col=bColors, ylim=range(getDataFrame(x)[y]), lty=1, xlab=paste("Time (",units,")",sep=""),ylab=y)              
+              t <- length(getTid(x))
+              
+              if (plotType=="lines"){
+                
+                x.locs <- sort(as.numeric(difftime( getTimedatestamps(x, "%Y-%m-%d %H:%M"), min(getTimedatestamps(x)), units=units)))
+                sub <- paste("Starting from", as.character( min(getTimedatestamps(x,"%Y-%m-%d %H:%M"))))
+                ylims <- range(tByS,na.rm=TRUE)
+                i <- 1
+                plot(x.locs, tByS[,i], type="l", col=bColors[i],xlab=paste("Time (",units,")",sep=""),ylab=y, sub=sub,ylim=ylims)
+                if (n.s>1){
+                  for (i in 2:n.s){
+                    lines(x.locs, tByS[,i], col=bColors[i])
+                  }
+                }
+              }
+              
+              if (plotType=="fda"){
+                ## Have to remove columns with more than 0% missing data to get the plot to work right.
+                tooManyMissing <- which(apply( apply(tByS, 2, is.na), 2, sum) > 0)
+                tByS <- tByS[, -tooManyMissing ]
+                bColors <- bColors[  -tooManyMissing ]
+                if ( length(tooManyMissing) > 0) {
+                  print(paste("There are",length(tooManyMissing),"stations with missing data"))
+                  print(paste("which will not be shown.  That is",100*round(length(tooManyMissing)/n.s,3),"% of the sites"))
+                }
+                ## can sortt because tByS is in sorted order.
+                fdargvals <- sort(as.numeric(difftime( getTimedatestamps(x,"%Y-%m-%d %H:%M"), min(getTimedatestamps(x)), units=units)))
+                fb <- create.fourier.basis( c(0,t), ceiling(2*t/3))
+                ofd <- Data2fd( argvals=fdargvals,  y=tByS, basis=fb )
+                sub <- paste("Starting from", as.character( min(getTimedatestamps(x,"%Y-%m-%d %H:%M"))))
+                plot(ofd, col=bColors, ylim=range(getDataFrame(x)[y]), lty=1, xlab=paste("Time (",units,")",sep=""),ylab=y, sub=sub)
+              }
             }
           }
           )
@@ -324,9 +345,29 @@ setMethod("stDist",c(sp="SpatialTemporalDataFrame",type="character"),
 
 setMethod("stApply",c(st="SpatialTemporalDataFrame", colname="character", format="character", fun="function", by.site="logical"),
           function(st, colname, format, fun, by.site){
-            tds <- getTimedatestamps(st)
-            tds.formatted <- format(tds, format=format)
-            ##new.temporal.col <- getTimedatestamps(from)[ match( df.new$t.id, getTid(from) ) ]
+            tds.formatted <- getTimedatestamps(st,format)
+            tdsfm <- tds.formatted[match( st@data@df$"t.id", getTid(st) ) ]
+            ## now, create a new df.
+            if ( !by.site ){
+              x <- data.frame( st@data@df[colname])
+              return(gapply(x, which=1, FUN=fun, group=tdsfm) )
+            } else {
+              ## do gapply thing for each location.
+              sid <- getSid(st)
+              x <- data.frame( st@data@df[colname], sid=st@data@df["s.id"]) 
+              #cbind(x, tdsfm)
+              out <- list()
+              for (i in 1:length(sid)) {
+                x1 <- x[(x$s.id == sid[i]) ,]
+               # x1
+                st.grp <- tdsfm[(x$s.id == sid[i])]
+                out[[i]] <- gapply(x1, which=1, FUN=mean, group=st.grp)
+
+              }
+              return(out)
+            }
+            
+
           }
           )
 
