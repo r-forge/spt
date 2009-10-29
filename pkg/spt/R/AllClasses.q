@@ -30,3 +30,4 @@ setClass("SpatialTemporalDataFrame",
 ##setClassUnion("SpatialTemporalDataFrame",c("stSpatial",
 ##                                          "stTemporal",
 ##                                          "stDataFrame"))
+# Mikes first change

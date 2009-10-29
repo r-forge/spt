@@ -17,7 +17,7 @@ setMethod("summary","stSpatialPoints",
           function(object){cat("A collection of",length(object@s.id),"points.\n") } )
 
 setMethod("getDataFrame", signature(x="stSpatialPoints"),
-          function(x) return( data.frame(sid=x@s.id, locations=coordinates(x) )) 
+          function(x) return( data.frame(sid=x@s.id, coordinates(x) )) 
         )
 
 
@@ -132,7 +132,7 @@ setMethod("stUpdate",c(st="stSpatialPoints", new.id="integer"),
             ## TBD update bounding box
             if (length(new.members)==1){
               st@coords <- t(as.matrix(coordinates(st)[new.members,]))
-              st@bbox <- rbind( coordinates(st)[1], coordinates(st)[2])
+              st@bbox <- cbind( as.numeric(coordinates(st)), as.numeric(coordinates(st)))
             } else {
               st@coords <- coordinates(st)[new.members,]
               st@bbox <- cbind( apply( coordinates(st), 2, min,na.rm=TRUE),
@@ -148,15 +148,30 @@ setMethod("stUpdate",c(st="stSpatialPoints", new.id="integer"),
 
 setMethod("stDist", signature(sp="SpatialPoints", type="character"),
           ## Need to make sure that the rdist called is the one in fields library...
-          function(sp, type) {
-            require(fields)
+          function(sp, type, miles=TRUE) {
+##            require(fields)
             if ( type == "euclidean" ){
               dst <- rdist(coordinates(sp))
               colnames(dst) <- getSid(sp)
               rownames(dst) <- getSid(sp)
               return(dst)
             } else if ( type =="earth" ) {
-              dst <- rdist.earth(coordinates(sp))
+              ## coordinates needs to be in form [long, lat] for correct
+              ## computation of earth distance...
+              crds <- as.matrix(coordinates(sp))
+              crd.names <- colnames(crds)
+              indx <- pmatch( upper.case(crd.names[1]), upper.case(c("lat", "long", "lats", "longs", "latitude","longitude")))
+              if (is.na(indx) | length(indx)==0 )
+                stop("In order to calculate earth (great circle) distance, coordinate columns must have names 'lat' and 'long' ")
+              if ( even(indx))
+                ## if it's even, then we have long in column 1.
+##                dst <- rdist.earth(crds, miles=miles)
+                dst <- calc.dist( crds[,1], crds[,2], miles=miles)
+              else
+                ## have to pass long/lat in correct order.
+##                dst <- rdist.earth(crds[,2:1], miles=miles)
+                dst <- calc.dist( crds[,2], crds[,1], miles=miles)
+              
               colnames(dst) <- getSid(sp)
               rownames(dst) <- getSid(sp)
               return(dst)

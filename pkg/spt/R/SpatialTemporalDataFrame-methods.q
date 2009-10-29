@@ -253,7 +253,7 @@ setMethod("stSubset",c(x="SpatialTemporalDataFrame",bounds="matrix"),
 ##
 ## Constructor
 ##
-SpatialTemporalDataFrame <- function( stdf, location.col, time.col, tformat="%Y-%m-%d"){
+SpatialTemporalDataFrame <- function( stdf, location.col, time.col, format="%Y-%m-%d"){
   ## Create a new stDF, given a full stdf, and the column numbers for location
   ## and time
   verbose <- FALSE
@@ -278,7 +278,7 @@ SpatialTemporalDataFrame <- function( stdf, location.col, time.col, tformat="%Y-
 
   if (verbose) 
     pp("Creating an stTemporal object",Sys.time())
-  unique.times <- timeDate(unique(tims), format=tformat)
+  unique.times <- timeDate(unique(tims), format=format)
   t.id <- 1:length(unique.times)
   stt <- new("stTemporal", t.id=t.id, timedatestamps=unique.times)
 
@@ -296,7 +296,7 @@ SpatialTemporalDataFrame <- function( stdf, location.col, time.col, tformat="%Y-
   locs.as.char <- apply(locs,1,paste,collapse=" ")
   unique.locs.as.char <- apply(unique.locs,1,paste,collapse=" ")
   new.df.sid.col <- match( locs.as.char, unique.locs.as.char)
-  new.df.tid.col <- match( as.character(timeDate(tims,format=tformat)), as.character(unique.times) )
+  new.df.tid.col <- match( as.character(timeDate(tims,format=format)), as.character(unique.times) )
   if (verbose) 
     pp("Creating an stDataFrame object",Sys.time())
   new.df <- data.frame( stdf[, -c(location.col, time.col)], new.df.tid.col, new.df.sid.col)  
@@ -332,12 +332,12 @@ setAs("SpatialTemporalDataFrame", "data.frame",
 
 
 setMethod("stDist",c(sp="SpatialTemporalDataFrame",type="character"),
-          function(sp,type,units){
+          function(sp,type,units, miles=TRUE){
             if ( !exists("type")) stop("Using stUpdate on an stDataFrame requires updating either type 'temporal' or type 'spatial'; none provided ")
             if (type == "spatial"){
-              return(stDist(sp@spatial,units))
+              return(stDist(sp@spatial, units, miles=miles))
             } else if (type == "temporal"){
-              return(stDist(sp@temporal,units))
+              return(stDist(sp@temporal, units))
             } else {
               stop("Using stUpdate on an stDataFrame requires updating either type 'temporal' or type 'spatial' ")
             }

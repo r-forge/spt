@@ -47,7 +47,7 @@ getEPAAirExplorerData <- function(pollutant, state, startDate, endDate,tformat="
       }
   } else {
     spt <- NA
-    cnt <- 1
+    cnt <- 2
     while ( identical(NA,spt) & cnt <= n.state ){
       print(paste("getting data for state",state[cnt],"..."))
       spt <- getStateData(pollutant, state[cnt], startDate,endDate, tformat)
@@ -85,3 +85,106 @@ color.matlab= c("#00008F", "#00009F", "#0000AF", "#0000BF", "#0000CF", "#0000DF"
   "#AF0000", "#9F0000", "#8F0000", "#800000")
 
 pp <- function(...) print(paste(...))
+even <- function(x) return( x%%2 == 0)
+
+upper.case <- function (u.case)  {
+  ## copied from clim.pact
+    lfac <- FALSE
+    if (is.null(u.case)) 
+        return()
+    if (is.factor(u.case)) {
+        lfac <- TRUE
+    }
+    if ((!is.character(u.case)) & (!is.factor(u.case))) 
+        return()
+    str <- as.character(u.case)
+    if ((min(nchar(str)) == 0) & (is.null(str))) 
+        return()
+    upper.case <- str
+    for (is in 1:length(str)) {
+        nc <- nchar(str[is])
+        upper.case[is] <- ""
+        for (ic in 1:nc) {
+            sstr <- substr(str[is], ic, ic)
+            u.l <- switch(as.character(sstr), a = "A", b = "B", 
+                c = "C", d = "D", f = "F", e = "E", g = "G", 
+                h = "H", i = "I", j = "J", k = "K", l = "L", 
+                m = "M", n = "N", o = "O", p = "P", q = "Q", 
+                r = "R", s = "S", t = "T", u = "U", v = "V", 
+                w = "W", x = "X", y = "Y", z = "Z")
+            if (length(u.l) == 0) 
+                u.l <- sstr
+            upper.case[is] <- paste(upper.case[is], u.l, sep = "")
+        }
+    }
+    if (lfac) {
+        upper.case <- factor(upper.case)
+    }
+    return(upper.case)
+}
+
+calc.dist <- function(longitudes, latitudes, miles=FALSE){
+  if (miles) 
+    radius <- 3963.34
+  else
+    radius <- 6378.1 # fields lib uses 6378.388
+  n.id <- length(longitudes)
+  dist.matrix <- matrix(0,nrow=n.id,ncol=n.id)
+  coord1.norm <- longitudes/57.29577951
+  coord2.norm <- latitudes/57.29577951
+  coord1.mat1 <- matrix(rep(coord1.norm,each=n.id),nrow=n.id,ncol=n.id,byrow=TRUE)
+  coord1.mat2 <- t(coord1.mat1)
+  coord2.mat1 <- matrix(rep(coord2.norm,each=n.id),nrow=n.id,ncol=n.id,byrow=TRUE)
+  coord2.mat2 <- t(coord2.mat1)
+  diff.coord1 <- coord1.mat1-coord1.mat2
+  sin.c2m1 <- sin(coord2.mat1)
+  sin.c2m2 <- sin(coord2.mat2)
+  cos.c2m1 <- cos(coord2.mat1)
+  cos.c2m2 <- cos(coord2.mat2)
+  cos.diff <- cos(diff.coord1)
+  cos.A <- sin.c2m1*sin.c2m2+cos.c2m1*cos.c2m2*cos.diff
+  index <- seq(1:(n.id^2))[cos.A>1]
+  repl.cos.A <- replace(cos.A,index,1)
+  dist.matrix <- round(radius*acos(repl.cos.A),2)
+  return(dist.matrix)
+}
+
+gapply <- function (object, which, FUN, form = formula(object), level, groups = getGroups(object, form, level), ...) {
+  ## copied from nlme library.
+    if (!inherits(object, "data.frame")) {
+        stop("Object must inherit from data.frame")
+    }
+    if (missing(groups)) {
+        if (!inherits(form, "formula")) {
+            stop("\"Form\" must be a formula")
+        }
+        if (is.null(grpForm <- getGroupsFormula(form, asList = TRUE))) {
+            grpForm <- splitFormula(asOneSidedFormula(form[[length(form)]]))
+        }
+        if (missing(level)) 
+            level <- length(grpForm)
+        else if (length(level) != 1) {
+            stop("Only one level allowed in gapply")
+        }
+        groups <- groups
+    }
+    if (!missing(which)) {
+        switch(mode(which), character = {
+            wchNot <- is.na(match(which, names(object)))
+            if (any(wchNot)) {
+                stop(paste(paste(which[wchNot], collapse = ","), 
+                  "not matched"))
+            }
+        }, numeric = {
+            if (any(is.na(match(which, 1:ncol(object))))) {
+                stop("Which must be between 1 and", ncol(object))
+            }
+        }, stop("Which can only be character or integer."))
+        object <- object[, which, drop = FALSE]
+    }
+    val <- lapply(split(object, groups), FUN, ...)
+    if (is.atomic(val[[1]]) && length(val[[1]]) == 1) {
+        val <- unlist(val)
+    }
+    return(val)
+}
