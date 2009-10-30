@@ -31,3 +31,4 @@ setClass("SpatialTemporalDataFrame",
 ##                                          "stTemporal",
 ##                                          "stDataFrame"))
 # Mikes first change
+# Mikes first change
