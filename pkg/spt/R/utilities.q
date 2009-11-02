@@ -1,5 +1,5 @@
 
-getEPAAirExplorerData <- function(pollutant, state, startDate, endDate,tformat="%Y-%m-%d"){
+getEPAAirExplorerData <- function(pollutant, state, startDate, endDate, format="%Y-%m-%d"){
   getPollutantNumber <- function(pollutant){
     poll.names <- c("Pb", "CO", "SO2", "NO2", "Ozone", "PM10", "PM2.5")
     poll.vals <- as.character(c( 12128, 42101, 42104, 42602, 44201, 81102, 88101))
@@ -12,9 +12,9 @@ getEPAAirExplorerData <- function(pollutant, state, startDate, endDate,tformat="
     curr.state <- match.arg(state, state.abb)
     return( state.vals[ which(curr.state==state.abb)])
   }
-  getStateData <- function(pollutant, state, startDate, endDate, tformat){
-    dateStart <- timeDate(startDate,tformat)
-    dateEnd <- timeDate(endDate,tformat)
+  getStateData <- function(pollutant, state, startDate, endDate, fformat){
+    dateStart <- timeDate(startDate, format)
+    dateEnd <- timeDate(endDate, format)
     sy <- format(dateStart,"%Y")
     sm <- format(dateStart,"%m")
     sd <- format(dateStart,"%d")
@@ -34,12 +34,12 @@ getEPAAirExplorerData <- function(pollutant, state, startDate, endDate,tformat="
     aeMatrix <- read.csv(con,as.is=TRUE)[, c("Date","SITE","Concentration","LATITUDE","LONGITUDE","ELEVATION")]
     close(con)
     rm("aeData"); gc()
-    return(SpatialTemporalDataFrame(stdf=aeMatrix, location.col=5:4, time.col=1, tformat="%m/%d/%Y") )
+    return(SpatialTemporalDataFrame(stdf=aeMatrix, location.col=5:4, time.col=1, format="%m/%d/%Y") )
   }
   n.state <- length(state)
   if ( n.state==1){
     print(paste("getting data for state",state,"..."))
-    curr.state <- getStateData(pollutant, state[1], startDate,endDate, tformat)
+    curr.state <- getStateData(pollutant, state[1], startDate,endDate, format)
       if ( !identical(NA,curr.state)) {
         return(curr.state)
       } else {
@@ -50,7 +50,7 @@ getEPAAirExplorerData <- function(pollutant, state, startDate, endDate,tformat="
     cnt <- 2
     while ( identical(NA,spt) & cnt <= n.state ){
       print(paste("getting data for state",state[cnt],"..."))
-      spt <- getStateData(pollutant, state[cnt], startDate,endDate, tformat)
+      spt <- getStateData(pollutant, state[cnt], startDate,endDate, format)
       if ( identical(NA,spt))
         print(paste("There is no data for this pollutant in this time interval for state:",state[cnt]))
     }
@@ -60,7 +60,7 @@ getEPAAirExplorerData <- function(pollutant, state, startDate, endDate,tformat="
     } else {
       for (i in cnt:n.state){
         print(paste("getting data for state",state[i],"..."))
-        curr.state <- getStateData(pollutant, state[i], startDate,endDate, tformat)
+        curr.state <- getStateData(pollutant, state[i], startDate,endDate, format)
         if ( !identical(NA,curr.state)) {
           spt <- stJoin(spt, curr.state)
         } else {

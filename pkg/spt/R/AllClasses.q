@@ -14,6 +14,8 @@ setClass("stSpatial", representation(s.id="integer","VIRTUAL") )
 ## note that order matters when it comes to looking for which method to call
 ## when inheritance is used.
 setClass("stSpatialPoints", contains=c("SpatialPoints","stSpatial") )
+setClass("stSpatialGrid", contains=c("SpatialGrid","stSpatial") )
+
 setClass("stDataFrame",
          representation(s.id="integer",
                         t.id="integer",

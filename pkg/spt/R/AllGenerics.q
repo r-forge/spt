@@ -39,6 +39,7 @@ setGeneric("getTimeBySpaceMat", function(st, colname) {standardGeneric("getTimeB
 ##
 setGeneric("getSid", function(x){ standardGeneric("getSid")})
 setGeneric("getSpatialPoints", function(x){ standardGeneric("getSpatialPoints")})
+setGeneric("getSpatialGrid", function(x){ standardGeneric("getSpatialGrid")})
 
 setGeneric("getTid", function(x){ standardGeneric("getTid")})
 ##setGeneric("periodicity", function(x){ standardGeneric("periodicity")}) ## TBD, Fix
@@ -61,6 +62,7 @@ setGeneric("getstDataFrame", function(x){ standardGeneric("getstDataFrame")})
 ##
 setGeneric("setSid<-", function(object, value){ standardGeneric("setSid<-")})
 setGeneric("setSpatialPoints<-", function(object, value){ standardGeneric("setSpatialPoints<-")})
+setGeneric("setSpatialGrid<-", function(object, value){ standardGeneric("setSpatialGrid<-")})
 
 setGeneric("setTid<-", function(object,value){ standardGeneric("setTid<-")})
 setGeneric("setTimedatestamps<-", function(object, value){ standardGeneric("setTimedatestamps<-")})
