@@ -350,7 +350,7 @@ setMethod("stApply",c(st="SpatialTemporalDataFrame", colname="character", format
             ## now, create a new df.
             if ( !by.site ){
               x <- data.frame( st@data@df[colname])
-              return(gapply(x, which=1, FUN=fun, group=tdsfm) )
+              return(gapply(x, which=1, FUN=fun, group=tdsfm, na.rm=TRUE) )
             } else {
               ## do gapply thing for each location.
               sid <- getSid(st)
@@ -361,7 +361,7 @@ setMethod("stApply",c(st="SpatialTemporalDataFrame", colname="character", format
                 x1 <- x[(x$s.id == sid[i]) ,]
                # x1
                 st.grp <- tdsfm[(x$s.id == sid[i])]
-                out[[i]] <- gapply(x1, which=1, FUN=mean, group=st.grp)
+                out[[i]] <- gapply(x1, which=1, FUN=fun, group=st.grp, na.rm=TRUE)
 
               }
               return(out)
