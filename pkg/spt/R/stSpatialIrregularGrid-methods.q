@@ -157,16 +157,6 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
           }
           )
 
-SpatialIrregularGrid <- function(grid, grid.index, coords, bbox=matrix(NA), proj4string = CRS(as.character(NA)), s.id=as.integer(1:nrow(coords)) ){
-  spsp <- SpatialIrregularGrid(coords, proj4string, bbox)
-  return(new("stSpatialIrregularGrid", s.id=s.id, grid=grid, grid.index=grid.index, coords=as.matrix(spsp@coords), bbox=spsp@bbox, proj4string = spsp@proj4string))
-}
-
-
-stSpatialIrregularGrid <- function(grid, grid.index, coords, bbox=matrix(NA), proj4string = CRS(as.character(NA)), s.id=as.integer(1:nrow(coords)) ){
-  spsp <- SpatialIrregularGrid(coords, proj4string, bbox)
-  return(new("stSpatialIrregularGrid", s.id=s.id, grid=grid, grid.index=grid.index, coords=as.matrix(spsp@coords), bbox=spsp@bbox, proj4string = spsp@proj4string))
-}
 
 ## Getters
 setMethod("getSid", signature(x="stSpatialIrregularGrid"),
@@ -181,37 +171,6 @@ setReplaceMethod("setSid", signature("stSpatialIrregularGrid"),
             return(object)
           }
           )
-
-#setReplaceMethod("setSpatialIrregularGrid", signature("stSpatialIrregularGrid"),
-#          function(object,value){
-#            validObject(value)
-#            if ( exists(value@coords)){
-##              if (nrow(value@coords)==1){
- #               object@coords <- t(as.matrix(value@coords))
- #             } else {
- #               object@coords <- as.matrix(value@coords)
- #             }
- #           } else {
- #             stop("Error: Trying to replace slot 'coords' with an object without such a slot name")
- #           }
- #           if ( exists(value@coords)){
- #             object@bbox <- value@bbox
- #           } else {
- #             stop("Error: Trying to replace slot 'bbox' with an object without such a slot name")
-#            }
-#            if ( exists(value@grid)){
-#              object@grid <- value@grid
-#            } else {
-#              stop("Error: Trying to replace slot 'grid' with an object without such a slot name")
-#            }
-#            if ( exists(value@grid.index)){
-#              object@grid.index <- value@grid.index
-#            } else {
-#              stop("Error: Trying to replace slot 'grid.index' with an object without such a slot name")
-#            }
-#            return(object)
-#          }
-#          )
 
 ## FIX TBD grid, grid.index need to be updated.
 setMethod("stSubset", signature(x="stSpatialIrregularGrid", bounds="integer"),
@@ -329,26 +288,4 @@ setMethod("stDist", signature(sp="SpatialIrregularGrid", type="character"),
               stop("distance type can only be 'euclidean' or 'earth' ")
             }
           })
-
-## FIX TBD grid, grid.index need to be updated.
-setMethod("stJoin", signature(x="stSpatialIrregularGrid", y="stSpatialIrregularGrid"),
-          function(x,y){
-            ## Fix, TBD check bbox, proj4str and more??
-            x.c <- coordinates(x)
-            y.c <- coordinates(y)
-            if (ncol(x.c) != ncol(y.c))
-              stop("You can only join stSpatialIrregularGrid objects which both have the same number of coordinates")
-            sp <- SpatialIrregularGrid(unique( rbind(x.c, y.c)))
-            new.sids <- 1:nrow( coordinates(sp))
-            x.char <- apply(x.c, 1, paste, collapse=" ")
-            y.char <- apply(y.c, 1, paste, collapse=" ")
-            new.char <- apply(sp@coords[ order(sp@coords[,1]),], 1, paste, collapse=" ")
-            x.id.map <- match(x.char, new.char)
-            y.id.map <- match(y.char, new.char)            
-            x@coords <- sp@coords[ order(sp@coords[,1]),]
-            x@s.id <- new.sids
-            x@bbox <- sp@bbox
-            return(list(stSpatialIrregularGrid=x, x.id.map=x.id.map, y.id.map=y.id.map) )
-          }
-          )
 
