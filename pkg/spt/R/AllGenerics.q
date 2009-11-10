@@ -1,3 +1,11 @@
+library(sp)
+library(timeDate)
+library(RUnit)
+library(RCurl)     ## to get air explorer data
+library(maps)      ## state maps
+library(fda)       ## for plotting spatiol points (with time)
+data(stateMapEnv)
+
 
 ## distance matrix over space, time
 setGeneric("stDist",   function(sp, type, ...)   {standardGeneric("stDist")} )
@@ -24,7 +32,12 @@ setGeneric("stApply", function(st, colname, format, fun, by.site) {standardGener
 ## where the colnames and rownames have the unique ids.
 setGeneric("getTimeBySpaceMat", function(st, colname) {standardGeneric("getTimeBySpaceMat")} )
 
-
+############################################################
+##
+## CONSTRUCTORS
+##
+setGeneric("stSpatialIrregularGrid", function(st, indices.cols, ...) {standardGeneric("stSpatialIrregularGrid")} )
+############################################################
 
 ############################################################
 ##

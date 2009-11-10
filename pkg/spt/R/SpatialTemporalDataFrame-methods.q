@@ -1,4 +1,51 @@
 
+
+############################################################
+############################################################
+##
+## SPATIALIRREGULARGRIDTEMPORALDATAFRAME follows;
+##
+############################################################
+############################################################
+
+SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols, time.col, format="%Y-%m-%d"){
+
+  stsg <- stSpatialIrregularGrid(df, indices.cols, center.cols)
+  
+  tims <- as.character(df[,time.col])
+  unique.times <- timeDate(unique(tims), format=format)
+  t.id <- as.integer(1:length(unique.times))
+  stt <- new("stTemporal", t.id=t.id, timedatestamps=unique.times)
+
+  nr <- max(df[ , indices.cols[1] ])
+  nc <- max(df[ , indices.cols[2] ])
+  s.id <- as.integer(1:(nr*nc))
+  ## Note that COLUMN MAJOR format is the default...
+  new.df.sid.col <- as.integer( (df[ , indices.cols[2] ]-1) * nr + df[ , indices.cols[1] ] )
+  new.df.tid.col <- match( as.character(timeDate(tims,format=format)), as.character(unique.times) )
+  
+  new.df <- data.frame( df[, -c(indices.cols, center.cols, time.col)], new.df.tid.col, new.df.sid.col)  
+  names(new.df) <- c(names(df)[-c(indices.cols, center.cols, time.col)], "t.id","s.id")  
+  stdf.new <- new( "stDataFrame", s.id=s.id, t.id=t.id, df=new.df )
+
+  return( new("SpatialIrregularGridTemporalDataFrame", spatial=stsg, temporal=stt, data=stdf.new) )
+#  plot(stsg,col=2,axes=TRUE,border=FALSE)  
+#  map("state",add=T,interior=T)
+  
+}
+
+
+
+
+############################################################
+############################################################
+##
+## SPATIALTEMPORALDATAFRAME follows;
+## will soon be renamed SpatialPointsTemporalDataFrame
+##
+############################################################
+############################################################
+
 validSpatialTemporalDataFrameObject <- function(object) {
   ## TBD
   ## Want to make sure that only the s.id and t.id locations are included in the dataframe...

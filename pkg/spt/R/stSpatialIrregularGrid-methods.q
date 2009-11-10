@@ -47,6 +47,7 @@ setMethod("stSpatialIrregularGrid", signature(st="SpatialPolygons", indices.cols
 
 setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="integer"),
           function(st, indices.cols, center.cols){
+            browser()
             df <- st
             nr <- max(df[, indices.cols[1]]) # num rows in *orig* grid
             nc <- max(df[, indices.cols[2]]) # num cols in *orig* grid
@@ -80,9 +81,9 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
             ## (x[2],y[2]) is the midpoint between
             ## (xhat, yhat) and (x[1], y[1])
             ## Order is counter clockwise so we don't miss next-to-corner grid cell boundaries (except for 1 in UR)
-            plot(centers$long, centers$lat, pch=46, asp=1)
-            points(irregGrid$final.long, irregGrid$final.lat, pch=46, col="green")
-            map("state",add=T,interior=T)
+#            plot(centers$long, centers$lat, pch=46, asp=1)
+#            points(irregGrid$final.long, irregGrid$final.lat, pch=46, col="green")
+#            map("state",add=T,interior=T)
             ## Extrapolate top row grid boundaries:
             for (j in 1:(nc-1)){  # because irregGrid$final.x[i+1, nc+1] doesn't exist
               i <- 1 # top row
@@ -93,7 +94,7 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
               irregGrid$final.lat[i,j] <- yhat
               irregGrid$final.long[i,j] <- xhat
                                         #    points(xhat, yhat, col="red", pch=46)
-              points(irregGrid$final.long[i,j], irregGrid$final.lat[i,j], col="red", pch=46)
+#              points(irregGrid$final.long[i,j], irregGrid$final.lat[i,j], col="red", pch=46)
             }
             ## Get the [1,nc] entry, but have to change the points we're using...
             x <- c(irregGrid$final.long[2, nc-1], centers$long[1,nc-1])
@@ -102,7 +103,7 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
             xhat <- 2*x[2]-x[1]
             irregGrid$final.lat[1,nc] <- yhat
             irregGrid$final.long[1,nc] <- xhat
-            points(irregGrid$final.long[1,nc], irregGrid$final.lat[1,nc], col="orange", pch=46)
+#            points(irregGrid$final.long[1,nc], irregGrid$final.lat[1,nc], col="orange", pch=46)
             ## Extrapolate left column grid boundaries: 
             for (i in 1:nr){
               j <- 1 # left col
@@ -113,7 +114,7 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
               irregGrid$final.lat[i+1,j] <- yhat
               irregGrid$final.long[i+1,j] <- xhat
                                         #    points(xhat, yhat, col="blue", pch=46)
-              points(irregGrid$final.long[i+1,j], irregGrid$final.lat[i+1,j], col="blue", pch=46)
+#              points(irregGrid$final.long[i+1,j], irregGrid$final.lat[i+1,j], col="blue", pch=46)
             }
             ## Extrapolate bottom row grid boundaries: (col 1 done from above)
             for (j in 1:nc ){
@@ -125,7 +126,7 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
               irregGrid$final.lat[i+1,j+1] <- yhat
               irregGrid$final.long[i+1,j+1] <- xhat
                                         #    points(xhat, yhat, col="red", pch=46)
-              points(irregGrid$final.long[i+1,j+1], irregGrid$final.lat[i+1,j+1], col="red", pch=46)
+#              points(irregGrid$final.long[i+1,j+1], irregGrid$final.lat[i+1,j+1], col="red", pch=46)
             }
             ## Extrapolate right column grid boundaries: 
             for (i in nr:1 ){
@@ -137,7 +138,7 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
               irregGrid$final.lat[i,j+1] <- yhat
               irregGrid$final.long[i,j+1] <- xhat
                                         #    points(xhat, yhat, col="blue", pch=46)
-              points(irregGrid$final.long[i,j+1], irregGrid$final.lat[i,j+1], col="blue", pch=46)
+#              points(irregGrid$final.long[i,j+1], irregGrid$final.lat[i,j+1], col="blue", pch=46)
             }
             ## Now we can make polygons for each grid cell...
             cnt <- 1
@@ -155,40 +156,6 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
             return( stSpatialIrregularGrid(spp, as.integer(1:(nr*nc)))  )
           }
           )
-  
-
-
-#df <- ndf
-#indices.cols <- 2:1
-##center.cols <- 3:4
-#time.col <- 5
-#format <- "%Y-%m-%d"
-
-SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols, time.col, format="%Y-%m-%d"){
-
-  stsg <- stSpatialIrregularGrid(df, indices.cols, center.cols)
-  
-  tims <- as.character(df[,time.col])
-  unique.times <- timeDate(unique(tims), format=format)
-  t.id <- as.integer(1:length(unique.times))
-  stt <- new("stTemporal", t.id=t.id, timedatestamps=unique.times)
-
-  nr <- max(df[ , indices.cols[1] ])
-  nc <- max(df[ , indices.cols[2] ])
-  s.id <- as.integer(1:(nr*nc))
-  ## Note that COLUMN MAJOR format is the default...
-  new.df.sid.col <- as.integer( (df[ , indices.cols[2] ]-1) * nr + df[ , indices.cols[1] ] )
-  new.df.tid.col <- match( as.character(timeDate(tims,format=format)), as.character(unique.times) )
-  
-  new.df <- data.frame( df[, -c(indices.cols, center.cols, time.col)], new.df.tid.col, new.df.sid.col)  
-  names(new.df) <- c(names(df)[-c(indices.cols, center.cols, time.col)], "t.id","s.id")  
-  stdf.new <- new( "stDataFrame", s.id=s.id, t.id=t.id, df=new.df )
-
-  return( new("SpatialIrregularGridTemporalDataFrame", spatial=stsg, temporal=stt, data=stdf.new) )
-#  plot(stsg,col=2,axes=TRUE,border=FALSE)  
-#  map("state",add=T,interior=T)
-  
-}
 
 SpatialIrregularGrid <- function(grid, grid.index, coords, bbox=matrix(NA), proj4string = CRS(as.character(NA)), s.id=as.integer(1:nrow(coords)) ){
   spsp <- SpatialIrregularGrid(coords, proj4string, bbox)
@@ -263,7 +230,6 @@ setMethod("stSubset", signature(x="stSpatialIrregularGrid", bounds="integer"),
             return( x )
           }
           )
-
 
 
 ## FIX TBD grid, grid.index need to be updated.
