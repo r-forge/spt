@@ -265,6 +265,7 @@ setMethod("stSubset", signature(x="stSpatialIrregularGrid", bounds="integer"),
           )
 
 
+
 ## FIX TBD grid, grid.index need to be updated.
 setMethod("stSubset", signature(x="stSpatialIrregularGrid", bounds="numeric"),
           function(x,bounds){

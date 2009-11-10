@@ -188,3 +188,21 @@ gapply <- function (object, which, FUN, form = formula(object), level, groups = 
     }
     return(val)
 }
+
+
+pp <- function(...) print(paste(...))
+
+loopProgressReporter <- function(i, n, start.time, reportQuantiles=seq(5,100,by=5), returnQuant=FALSE, printStatus=TRUE, units="mins" ){
+  pp <- function(...) print(paste(...))
+  ## In the event that we have a really long set of output and more than one
+  ## round to a quantile (eg 5%), we only want to display it once,
+  ## so we make sure we haven't seen it (used it) before...
+  currQuantile <- round( 100 * i / n, 0)
+  prevQuantile <- round( 100 * (i-1) / n, 0)
+  if (  (currQuantile %in% reportQuantiles) & !(prevQuantile %in% reportQuantiles) ) {
+    if (printStatus) pp(currQuantile,"% completed: ",i," of ",n, sep="")
+    if (printStatus) pp("Elapsed time: ", round( as.numeric(as.difftime(proc.time()["user.self"]-start.time, units="secs"),units=units), 1),units )
+    if(returnQuant) return(currQuantile)
+  }
+  return(NA)
+}
