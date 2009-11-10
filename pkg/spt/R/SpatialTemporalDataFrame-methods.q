@@ -46,7 +46,7 @@ SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols,
 ############################################################
 ############################################################
 
-validSpatialTemporalDataFrameObject <- function(object) {
+validSpatialPointsTemporalDataFrameObject <- function(object) {
   ## TBD
   ## Want to make sure that only the s.id and t.id locations are included in the dataframe...
   validObject(object@spatial)
@@ -58,32 +58,32 @@ validSpatialTemporalDataFrameObject <- function(object) {
   if ( !identical(sort(object@temporal@t.id), sort(object@data@t.id) ) )
     cat("unique temporal identifiers 't.id' must match in temporal and data objects")
 }
-setValidity("SpatialTemporalDataFrame", validSpatialTemporalDataFrameObject)
+setValidity("SpatialPointsTemporalDataFrame", validSpatialPointsTemporalDataFrameObject)
 
 
 ## Getters, setters:
-setMethod("getSid", signature(x="SpatialTemporalDataFrame"),
+setMethod("getSid", signature(x="SpatialPointsTemporalDataFrame"),
           function(x) return(x@spatial@s.id) )
-setMethod("getSpatialPoints", signature(x="SpatialTemporalDataFrame"),
+setMethod("getSpatialPoints", signature(x="SpatialPointsTemporalDataFrame"),
           function(x)return( new("SpatialPoints", coords=x@spatial@coords, bbox=x@spatial@bbox, proj4string = x@spatial@proj4string)) )
-setMethod("getTid", signature(x="SpatialTemporalDataFrame"),
+setMethod("getTid", signature(x="SpatialPointsTemporalDataFrame"),
           function(x) return(x@temporal@t.id) )
-setMethod("getTimedatestamps", signature(x="SpatialTemporalDataFrame"),
+setMethod("getTimedatestamps", signature(x="SpatialPointsTemporalDataFrame"),
           function(x,format="%Y-%m-%d")return( getTimedatestamps(x@temporal,format)))
-setMethod("getDataFrame", signature(x="SpatialTemporalDataFrame"),
+setMethod("getDataFrame", signature(x="SpatialPointsTemporalDataFrame"),
           function(x)return( x@data@df) )
-setMethod("getstSpatial",signature(x="SpatialTemporalDataFrame"),
+setMethod("getstSpatial",signature(x="SpatialPointsTemporalDataFrame"),
           function(x)return( x@spatial) )
-setMethod("getstTemporal",signature(x="SpatialTemporalDataFrame"),
+setMethod("getstTemporal",signature(x="SpatialPointsTemporalDataFrame"),
           function(x)return( x@temporal) )
-setMethod("getstDataFrame",signature(x="SpatialTemporalDataFrame"),
+setMethod("getstDataFrame",signature(x="SpatialPointsTemporalDataFrame"),
           function(x)return( x@data) )
 ##
-setMethod("show", "SpatialTemporalDataFrame",
+setMethod("show", "SpatialPointsTemporalDataFrame",
           function(object){#show(object@metadata)
                            show(object@data)}
           )
-setMethod("getTimeBySpaceMat", signature(st="SpatialTemporalDataFrame", colname="character"),
+setMethod("getTimeBySpaceMat", signature(st="SpatialPointsTemporalDataFrame", colname="character"),
           getTimeBySpaceMat <- function(st,colname){
             n.t <- length(getTid(st))
             n.s <- length(getSid(st))
@@ -108,7 +108,7 @@ setMethod("getTimeBySpaceMat", signature(st="SpatialTemporalDataFrame", colname=
           }
           )
 
-setMethod("plot", signature(x="SpatialTemporalDataFrame", y="character"),
+setMethod("plot", signature(x="SpatialPointsTemporalDataFrame", y="character"),
           function(x,y,units,plotType="fda",browse=FALSE) {
             if ( class(x@spatial) == "stSpatialPoints"){
               getGridCell <- function( pnt, xlims, ylims, x.len, y.len){
@@ -218,7 +218,7 @@ setMethod("plot", signature(x="SpatialTemporalDataFrame", y="character"),
           )
 
 ## subset for temporal (time as timeDate)
-setMethod("stSubset",c(x="SpatialTemporalDataFrame",bounds="timeDate"),
+setMethod("stSubset",c(x="SpatialPointsTemporalDataFrame",bounds="timeDate"),
           function(x,bounds){
             ## 1) subset the temporalal part.
             new.stt <- stSubset(x@temporal, bounds)
@@ -238,7 +238,7 @@ setMethod("stSubset",c(x="SpatialTemporalDataFrame",bounds="timeDate"),
           )
 
 ## subset for temporal (time as char)
-setMethod("stSubset",c(x="SpatialTemporalDataFrame",bounds="character"),
+setMethod("stSubset",c(x="SpatialPointsTemporalDataFrame",bounds="character"),
           function(x, bounds, format){
             return( stSubset(x, timeDate(bounds,format)))
           }
@@ -246,7 +246,7 @@ setMethod("stSubset",c(x="SpatialTemporalDataFrame",bounds="character"),
 
 
 ## subset for ID (spatial or temporal).
-setMethod("stSubset",c(x="SpatialTemporalDataFrame",bounds="integer"),
+setMethod("stSubset",c(x="SpatialPointsTemporalDataFrame",bounds="integer"),
           function(x, bounds, type){
             if ( !exists("type")) stop("Using stUpdate with integer bounds requires updating either type 'temporal' or type 'spatial'; none provided ")
             if (type == "spatial"){
@@ -275,7 +275,7 @@ setMethod("stSubset",c(x="SpatialTemporalDataFrame",bounds="integer"),
 
 
 ## subset for spatial
-setMethod("stSubset",c(x="SpatialTemporalDataFrame",bounds="matrix"),
+setMethod("stSubset",c(x="SpatialPointsTemporalDataFrame",bounds="matrix"),
           function(x,bounds){
             ## 1) subset the spatial part.
             new.sts <- stSubset(x@spatial, bounds)
@@ -300,7 +300,7 @@ setMethod("stSubset",c(x="SpatialTemporalDataFrame",bounds="matrix"),
 ##
 ## Constructor
 ##
-SpatialTemporalDataFrame <- function( stdf, location.col, time.col, format="%Y-%m-%d"){
+SpatialPointsTemporalDataFrame <- function( stdf, location.col, time.col, format="%Y-%m-%d"){
   ## Create a new stDF, given a full stdf, and the column numbers for location
   ## and time
   verbose <- FALSE
@@ -350,11 +350,11 @@ SpatialTemporalDataFrame <- function( stdf, location.col, time.col, format="%Y-%
   names(new.df) <- c(names(stdf)[-c(location.col, time.col)], "t.id","s.id")
   stdf.new <- new( "stDataFrame", s.id=s.id, t.id=t.id, df=new.df )
   if (verbose) 
-    pp("Creating a SpatialTemporalDataFrame object",Sys.time())
-  return( new("SpatialTemporalDataFrame", spatial=sts, temporal=stt, data=stdf.new) )
+    pp("Creating a SpatialPointsTemporalDataFrame object",Sys.time())
+  return( new("SpatialPointsTemporalDataFrame", spatial=sts, temporal=stt, data=stdf.new) )
 }
 
-as.data.frame.SpatialTemporalDataFrame <- function(from) {
+as.data.frame.SpatialPointsTemporalDataFrame <- function(from) {
         df.new <- getDataFrame(from)
         ## now replace the s.id and t.id with the actual values.
         new.temporal.col <- getTimedatestamps(from)[ match( df.new$t.id, getTid(from) ) ]
@@ -364,7 +364,7 @@ as.data.frame.SpatialTemporalDataFrame <- function(from) {
         return( data.frame( df.new[df.names], temporal=new.temporal.col, spatial=new.spatial.col) )
 }
 
-setAs("SpatialTemporalDataFrame", "data.frame",
+setAs("SpatialPointsTemporalDataFrame", "data.frame",
       function(from){
         df.new <- getDataFrame(from)
         ## now replace the s.id and t.id with the actual values.
@@ -378,7 +378,7 @@ setAs("SpatialTemporalDataFrame", "data.frame",
 
 
 
-setMethod("stDist",c(sp="SpatialTemporalDataFrame",type="character"),
+setMethod("stDist",c(sp="SpatialPointsTemporalDataFrame",type="character"),
           function(sp,type,units, miles=TRUE){
             if ( !exists("type")) stop("Using stUpdate on an stDataFrame requires updating either type 'temporal' or type 'spatial'; none provided ")
             if (type == "spatial"){
@@ -390,7 +390,7 @@ setMethod("stDist",c(sp="SpatialTemporalDataFrame",type="character"),
             }
           })
 
-setMethod("stApply",c(st="SpatialTemporalDataFrame", colname="character", format="character", fun="function", by.site="logical"),
+setMethod("stApply",c(st="SpatialPointsTemporalDataFrame", colname="character", format="character", fun="function", by.site="logical"),
           function(st, colname, format, fun, by.site){
             tds.formatted <- getTimedatestamps(st,format)
             tdsfm <- tds.formatted[match( st@data@df$"t.id", getTid(st) ) ]
@@ -418,7 +418,7 @@ setMethod("stApply",c(st="SpatialTemporalDataFrame", colname="character", format
           }
           )
 
-setMethod("stJoin", c(x="SpatialTemporalDataFrame", y="SpatialTemporalDataFrame"),
+setMethod("stJoin", c(x="SpatialPointsTemporalDataFrame", y="SpatialPointsTemporalDataFrame"),
           function(x,y){
             if (identical(NA,x) & identical(NA,y))
               stop("Cannot join two missing datasets")

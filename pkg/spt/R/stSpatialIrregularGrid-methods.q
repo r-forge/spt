@@ -152,7 +152,7 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
                 cnt <- cnt+1
               }
             }
-            spp <- SpatialPolygons(poly.list, 1:length(poly.list))
+            spp <- SpatialPolygons(poly.list, 1:(nr*nc) )
             return( stSpatialIrregularGrid(spp, as.integer(1:(nr*nc)))  )
           }
           )
