@@ -15,6 +15,7 @@ setClass("stSpatial", representation(s.id="integer","VIRTUAL") )
 ## when inheritance is used.
 setClass("stSpatialPoints", contains=c("SpatialPoints","stSpatial") )
 setClass("stSpatialGrid", contains=c("SpatialGrid","stSpatial") )
+setClass("stSpatialIrregularGrid", contains=c("SpatialPolygons","stSpatial") )
 
 setClass("stDataFrame",
          representation(s.id="integer",
