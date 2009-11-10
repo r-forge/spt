@@ -34,7 +34,7 @@ getEPAAirExplorerData <- function(pollutant, state, startDate, endDate, format="
     aeMatrix <- read.csv(con,as.is=TRUE)[, c("Date","SITE","Concentration","LATITUDE","LONGITUDE","ELEVATION")]
     close(con)
     rm("aeData"); gc()
-    return(SpatialTemporalDataFrame(stdf=aeMatrix, location.col=5:4, time.col=1, format="%m/%d/%Y") )
+    return(SpatialPointsTemporalDataFrame(stdf=aeMatrix, location.col=5:4, time.col=1, format="%m/%d/%Y") )
   }
   n.state <- length(state)
   if ( n.state==1){

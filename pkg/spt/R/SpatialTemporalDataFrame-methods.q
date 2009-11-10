@@ -9,7 +9,7 @@
 ############################################################
 
 SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols, time.col, format="%Y-%m-%d"){
-
+  browser()
   stsg <- stSpatialIrregularGrid(df, indices.cols, center.cols)
   
   tims <- as.character(df[,time.col])
