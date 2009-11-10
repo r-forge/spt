@@ -45,6 +45,13 @@ echo $contents; } ?>
 
 <p> Welcome to the spatiotemporal S4 class/method project.  We are getting setup right now.  Please join our project! </p>
 
+<h2>Notes</h2>
+<ul>
+<li> Always enter spatial coordinates in the format (x,y) or (long, lat)</li>
+<li> In grids, the vector form is column major order</li>
+<li> For distances, you have several choices: euclidean or great circle,  for great circle you have to choose units (miles, kilometers)</li>
+<li></li>
+</ul>
 
 <p> The <strong>project summary page</strong> you can find <a href="http://<?php echo $domain; ?>/projects/<?php echo $group_name; ?>/"><strong>here</strong></a>. </p>
 
