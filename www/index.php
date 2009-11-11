@@ -452,12 +452,401 @@ class="aett9-">&#x00A0;(CRS)</span><span
 class="aett9-">&#x00A0;arguments:</span><span 
 class="aett9-">&#x00A0;NA</span>
    </div>
+<!--l. 202--><p class="noindent" >
+   <h4 class="likesubsectionHead"><a 
+ id="x1-7000"></a>Data Classes</h4>
+<!--l. 203--><p class="noindent" >The main data class is called <span 
+class="aett-10">stDataFrame</span>
+<!--l. 207--><p class="indent" >
+   <div class="fancyvrb" id="fancyvrb11">
+<a 
+ id="x1-7002r1"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003E;</span><span 
+class="aesltt-10x-x-90">&#x00A0;tmp</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003C;-</span><span 
+class="aesltt-10x-x-90">&#x00A0;new("stDataFrame",</span><span 
+class="aesltt-10x-x-90">&#x00A0;s.id</span><span 
+class="aesltt-10x-x-90">&#x00A0;=</span><span 
+class="aesltt-10x-x-90">&#x00A0;as.integer(1:3),</span><span 
+class="aesltt-10x-x-90">&#x00A0;t.id</span><span 
+class="aesltt-10x-x-90">&#x00A0;=</span><span 
+class="aesltt-10x-x-90">&#x00A0;as.integer(1:3),</span>
+<br class="fancyvrb" /><a 
+ id="x1-7004r2"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;+</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;df</span><span 
+class="aesltt-10x-x-90">&#x00A0;=</span><span 
+class="aesltt-10x-x-90">&#x00A0;data.frame(s.id</span><span 
+class="aesltt-10x-x-90">&#x00A0;=</span><span 
+class="aesltt-10x-x-90">&#x00A0;as.integer(1:3),</span><span 
+class="aesltt-10x-x-90">&#x00A0;t.id</span><span 
+class="aesltt-10x-x-90">&#x00A0;=</span><span 
+class="aesltt-10x-x-90">&#x00A0;as.integer(1:3),</span>
+<br class="fancyvrb" /><a 
+ id="x1-7006r3"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;+</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;x1</span><span 
+class="aesltt-10x-x-90">&#x00A0;=</span><span 
+class="aesltt-10x-x-90">&#x00A0;runif(3),</span><span 
+class="aesltt-10x-x-90">&#x00A0;x2</span><span 
+class="aesltt-10x-x-90">&#x00A0;=</span><span 
+class="aesltt-10x-x-90">&#x00A0;rnorm(3)))</span>
+<br class="fancyvrb" /><a 
+ id="x1-7008r4"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003E;</span><span 
+class="aesltt-10x-x-90">&#x00A0;tmp</span>
+   </div>
+<!--l. 213--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb12">
+<a 
+ id="x1-7010r1"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;A</span><span 
+class="aett9-">&#x00A0;dataframe</span><span 
+class="aett9-">&#x00A0;with</span><span 
+class="aett9-">&#x00A0;3</span><span 
+class="aett9-">&#x00A0;observations</span><span 
+class="aett9-">&#x00A0;and</span><span 
+class="aett9-">&#x00A0;2</span><span 
+class="aett9-">&#x00A0;data</span><span 
+class="aett9-">&#x00A0;columns</span><span 
+class="aett9-">&#x00A0;with</span>
+<br class="fancyvrb" /><a 
+ id="x1-7012r2"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;3</span><span 
+class="aett9-">&#x00A0;unique</span><span 
+class="aett9-">&#x00A0;timedates</span><span 
+class="aett9-">&#x00A0;and</span>
+<br class="fancyvrb" /><a 
+ id="x1-7014r3"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;3</span><span 
+class="aett9-">&#x00A0;unique</span><span 
+class="aett9-">&#x00A0;locations.</span>
+   </div>
+<!--l. 220--><p class="noindent" >
+   <h4 class="likesubsectionHead"><a 
+ id="x1-8000"></a>Metadata Classes</h4>
+<!--l. 221--><p class="noindent" >Originally I had put in a metadata class to provide information about the data: units, collection data, url,
+citation info, etc, but I have removed it until the package is more mature unless there is rampant
+support.
+                                                                                         
+                                                                                         
+<!--l. 227--><p class="noindent" >
+   <h3 class="likesectionHead"><a 
+ id="x1-9000"></a>Methods</h3>
+<!--l. 228--><p class="noindent" >There are methods for: dist, join, subset, apply, but I don&#8217;t have time to fully go into them yet (short on
+time)....
+<!--l. 231--><p class="noindent" >
+   <h3 class="likesectionHead"><a 
+ id="x1-10000"></a>Quick Tour</h3>
+<!--l. 236--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb13">
+<a 
+ id="x1-10002r1"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003E;</span><span 
+class="aesltt-10x-x-90">&#x00A0;pollutant</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003C;-</span><span 
+class="aesltt-10x-x-90">&#x00A0;"Oz"</span>
+   </div>
+<!--l. 239--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb14">
+<a 
+ id="x1-10004r1"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;[1]</span><span 
+class="aett9-">&#x00A0;"Oz"</span>
+   </div>
+<!--l. 242--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb15">
+<a 
+ id="x1-10006r1"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003E;</span><span 
+class="aesltt-10x-x-90">&#x00A0;state</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003C;-</span><span 
+class="aesltt-10x-x-90">&#x00A0;c("SC",</span><span 
+class="aesltt-10x-x-90">&#x00A0;"NC")</span>
+   </div>
+<!--l. 245--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb16">
+<a 
+ id="x1-10008r1"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;[1]</span><span 
+class="aett9-">&#x00A0;"SC"</span><span 
+class="aett9-">&#x00A0;"NC"</span>
+   </div>
+<!--l. 248--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb17">
+<a 
+ id="x1-10010r1"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003E;</span><span 
+class="aesltt-10x-x-90">&#x00A0;startDate</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003C;-</span><span 
+class="aesltt-10x-x-90">&#x00A0;"2007-01-01"</span>
+   </div>
+<!--l. 251--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb18">
+<a 
+ id="x1-10012r1"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;[1]</span><span 
+class="aett9-">&#x00A0;"2007-01-01"</span>
+   </div>
+<!--l. 254--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb19">
+<a 
+ id="x1-10014r1"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003E;</span><span 
+class="aesltt-10x-x-90">&#x00A0;endDate</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003C;-</span><span 
+class="aesltt-10x-x-90">&#x00A0;"2007-01-30"</span>
+   </div>
+<!--l. 257--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb20">
+<a 
+ id="x1-10016r1"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;[1]</span><span 
+class="aett9-">&#x00A0;"2007-01-30"</span>
+   </div>
+<!--l. 260--><p class="noindent" >
+                                                                                         
+                                                                                         
+   <div class="fancyvrb" id="fancyvrb21">
+<a 
+ id="x1-10018r1"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003E;</span><span 
+class="aesltt-10x-x-90">&#x00A0;tmp</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003C;-</span><span 
+class="aesltt-10x-x-90">&#x00A0;getEPAAirExplorerData(pollutant,</span><span 
+class="aesltt-10x-x-90">&#x00A0;state,</span><span 
+class="aesltt-10x-x-90">&#x00A0;startDate,</span><span 
+class="aesltt-10x-x-90">&#x00A0;endDate)</span>
+   </div>
+<!--l. 263--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb22">
+<a 
+ id="x1-10020r1"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;[1]</span><span 
+class="aett9-">&#x00A0;"getting</span><span 
+class="aett9-">&#x00A0;data</span><span 
+class="aett9-">&#x00A0;for</span><span 
+class="aett9-">&#x00A0;state</span><span 
+class="aett9-">&#x00A0;SC</span><span 
+class="aett9-">&#x00A0;..."</span>
+<br class="fancyvrb" /><a 
+ id="x1-10022r2"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;[1]</span><span 
+class="aett9-">&#x00A0;"getting</span><span 
+class="aett9-">&#x00A0;data</span><span 
+class="aett9-">&#x00A0;for</span><span 
+class="aett9-">&#x00A0;state</span><span 
+class="aett9-">&#x00A0;SC</span><span 
+class="aett9-">&#x00A0;..."</span>
+<br class="fancyvrb" /><a 
+ id="x1-10024r3"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;[1]</span><span 
+class="aett9-">&#x00A0;"getting</span><span 
+class="aett9-">&#x00A0;data</span><span 
+class="aett9-">&#x00A0;for</span><span 
+class="aett9-">&#x00A0;state</span><span 
+class="aett9-">&#x00A0;NC</span><span 
+class="aett9-">&#x00A0;..."</span>
+<br class="fancyvrb" /><a 
+ id="x1-10026r4"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;A</span><span 
+class="aett9-">&#x00A0;dataframe</span><span 
+class="aett9-">&#x00A0;with</span><span 
+class="aett9-">&#x00A0;554</span><span 
+class="aett9-">&#x00A0;observations</span><span 
+class="aett9-">&#x00A0;and</span><span 
+class="aett9-">&#x00A0;3</span><span 
+class="aett9-">&#x00A0;data</span><span 
+class="aett9-">&#x00A0;columns</span><span 
+class="aett9-">&#x00A0;with</span>
+<br class="fancyvrb" /><a 
+ id="x1-10028r5"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;30</span><span 
+class="aett9-">&#x00A0;unique</span><span 
+class="aett9-">&#x00A0;timedates</span><span 
+class="aett9-">&#x00A0;and</span>
+<br class="fancyvrb" /><a 
+ id="x1-10030r6"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;11</span><span 
+class="aett9-">&#x00A0;unique</span><span 
+class="aett9-">&#x00A0;locations.</span>
+   </div>
+<!--l. 271--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb23">
+<a 
+ id="x1-10032r1"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003E;</span><span 
+class="aesltt-10x-x-90">&#x00A0;tmp</span>
+   </div>
+<!--l. 274--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb24">
+<a 
+ id="x1-10034r1"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;A</span><span 
+class="aett9-">&#x00A0;dataframe</span><span 
+class="aett9-">&#x00A0;with</span><span 
+class="aett9-">&#x00A0;554</span><span 
+class="aett9-">&#x00A0;observations</span><span 
+class="aett9-">&#x00A0;and</span><span 
+class="aett9-">&#x00A0;3</span><span 
+class="aett9-">&#x00A0;data</span><span 
+class="aett9-">&#x00A0;columns</span><span 
+class="aett9-">&#x00A0;with</span>
+<br class="fancyvrb" /><a 
+ id="x1-10036r2"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;30</span><span 
+class="aett9-">&#x00A0;unique</span><span 
+class="aett9-">&#x00A0;timedates</span><span 
+class="aett9-">&#x00A0;and</span>
+<br class="fancyvrb" /><a 
+ id="x1-10038r3"></a><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;</span><span 
+class="aett9-">&#x00A0;11</span><span 
+class="aett9-">&#x00A0;unique</span><span 
+class="aett9-">&#x00A0;locations.</span>
+   </div>
+<!--l. 281--><p class="noindent" >
+   <div class="fancyvrb" id="fancyvrb25">
+<a 
+ id="x1-10040r1"></a><span 
+class="aesltt-10x-x-90">&#x00A0;</span><span 
+class="aesltt-10x-x-90">&#x00A0;&#x003E;</span><span 
+class="aesltt-10x-x-90">&#x00A0;plot(tmp)</span>
+   </div>
+<!--l. 286--><p class="noindent" ><hr class="figure"><div class="figure" 
+><table class="figure"><tr class="figure"><td class="figure" 
+>
+                                                                                         
+                                                                                         
+<a 
+ id="x1-100411"></a>
+                                                                                         
+                                                                                         
+<div class="center" 
+>
+<!--l. 287--><p class="noindent" >
+<!--l. 288--><p class="noindent" ><img 
+src="spt0x.png" alt="PIC" class="graphics"><!--tex4ht:graphics  
+name="spt0x.png" src="ozoneNcSc.pdf"  
+--></div>
+<br /> <table class="caption" 
+><tr style="vertical-align:baseline;" class="caption"><td class="id">Figure&#x00A0;1: </td><td  
+class="content">Top: Plots of ozone concentrations at the 3 stations with no missing data; Bottom: legend, color
+of top time plots corresponds to spatial location in legend</td></tr></table><!--tex4ht:label?: x1-100411 -->
+                                                                                         
+                                                                                         
+<!--l. 291--><p class="noindent" ></td></tr></table></div><hr class="endfigure">
+   <h3 class="likesectionHead"><a 
+ id="x1-11000"></a>Performance</h3>
+<!--l. 295--><p class="noindent" >This code will be in need of constant performance work. I have tested the <span 
+class="aett-10">SpatialTemporalDataFrame </span>with a
+maxtrix of about 3.5 million observations, with about 4,400 unique times and 900 unique locations. The original
+text file was about 240 Mb, it took aboud 10 min to create the R object (with match and spfrtTime
+taking the most- I should be able to increase the speed by removing match and replacing it with some
+unique/duplicated work), and the resulting saved Rdata file was about 140 Mb. This data set has lat,
+long, time, obs1, obs2. I used Rprof and calls to Sys.time() (verbose option inside constructor) to get
+data.
+<!--l. 307--><p class="noindent" >
+   <h3 class="likesectionHead"><a 
+ id="x1-12000"></a>Wishlist</h3>
+<!--l. 308--><p class="noindent" >No ambitious project would be complete without feature requests.
+<!--l. 310--><p class="noindent" >
+   <h4 class="likesubsectionHead"><a 
+ id="x1-13000"></a>Proposed Version 1.0 Features</h4>
+     <ul class="itemize1">
+     <li class="itemize">Support for Spatiotemporal data (points), in version 0.01-01 (creation, accessing, subsetting, joining,
+     applying,
+     </li>
+     <li class="itemize">Support for Spatiotemporal data (grids, lines, polygons)
+     </li>
+     <li class="itemize">Data  retrieval  from  website  forms  from  <a 
+href="EPA's" air explorer >http://www.epa.gov/cgi-bin/htmSQL/mxplorer/</a>  (working,
+     0.01-01) and <a 
+href="Avian" Knowledge Network >http://www.avianknowledge.net/akntools/download</a>.
+     </li>
+     <li class="itemize">RUnit is used to maintain quality control by providing a testing framework. (v0.01-01). Can be provided
+     upon request until I put it into the test dir of the package. (haven&#8217;t figured out yet).
+     </li>
+     <li class="itemize">interfaces to <span 
+class="aett-10">spBayes </span>and <span 
+class="aett-10">INLA </span>packages
+     </li>
+     <li class="itemize">periodicity (as in the xts library context)</li></ul>
+<!--l. 327--><p class="noindent" >
+   <h4 class="likesubsectionHead"><a 
+ id="x1-14000"></a>Proposed Version 2.0 Features</h4>
+     <ul class="itemize1">
+     <li class="itemize">Support for larger data sets (both on the storage/access side as well as the computation side) On the
+     storage side, perhaps database storage for some/all obs/objects, and on the computation side perhaps
+     a way to pass to C or C++.
+                                                                                         
+                                                                                         
+     </li>
+     <li class="itemize">More data access capabilities
+     </li>
+     <li class="itemize">interfaces to <span 
+class="aett-10">openair </span>and <span 
+class="aett-10">trip </span>packages
+     </li>
+     <li class="itemize">support to coerce timeDate to class xts</li></ul>
+<!--l. 341--><p class="noindent" >
+   <h3 class="likesectionHead"><a 
+ id="x1-15000"></a>References</h3>
+<!--l. 342--><p class="noindent" >
+     <dl class="description"><dt class="description">
+ </dt><dd 
+class="description">Chambers, J.M., 1998, Programming with data, a guide to the S language. Springer, New York.</dd></dl>
+
 
 <h2>Notes</h2>
 <ul>
 <li> Always enter spatial coordinates in the format <TT>(x,y)</TT> or <TT>(long, lat)</TT></li>
 <li> In grids, the vector form is column major order</li>
 <li> For distances, you have several choices: euclidean or great circle,  for great circle you have to choose units (miles, kilometers)</li>
+<li> Note that grids are internally oriented in matrix notation with <TT>(1,1)</TT> in the upper left, but the input for irregular spatial grid currently has it in the lower left. </li>
 <!-- <li></li> -->
 </ul>
 
