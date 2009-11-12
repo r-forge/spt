@@ -33,8 +33,14 @@ setMethod("getTimedatestamps", signature(x="stTemporal"),
           function(x, format="%Y-%m-%d")return( format(x@timedatestamps, format=format)))
 
 setMethod("getDataFrame", signature(x="stTemporal"),
-          function(x,format="%Y-%m-%d") return( data.frame(tid=x@t.id, timedatestamps=format(x@timedatestamps,format)) )
-        )
+          function(x, format="%Y-%m-%d", time.type="char") {
+            if (time.type=="char"){
+              return(data.frame(tid=x@t.id, timedatestamps=format(x@timedatestamps,format)))
+            } else {
+              return(data.frame(tid=x@t.id, timedatestamps=x@timedatestamps) )
+            }
+          }
+          )
 
 ## Deprecated; moved to getTimedatestamps
 #### Given a format string, return the t.id which match it?

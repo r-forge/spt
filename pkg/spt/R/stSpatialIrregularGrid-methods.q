@@ -1,7 +1,7 @@
 
 validstSpatialIrregularGridObject <- function(object) {
   l.n.sid <- length(object@s.id)
-  l.n.coord <- nrow(coordinates(object@coords))
+  l.n.coord <- nrow(coordinates(object))
   if (l.n.sid != l.n.coord )
     paste("Unequal unique spatial id (s.id), unique coordinate counts: ", l.n.sid, ", ",l.n.coord, sep="")
   if ( !identical( class(object@s.id), "integer"))
@@ -43,11 +43,17 @@ setMethod("stSpatialIrregularGrid", signature(st="SpatialPolygons", indices.cols
             return( new("stSpatialIrregularGrid", polygons=st@polygons, plotOrder=st@plotOrder, bbox=st@bbox, proj4string=st@proj4string  ,s.id=indices.cols))
           })
 
+setMethod("plot", signature(x="stSpatialIrregularGrid", y="anything"),
+          function(x, y, units, plotLegend=TRUE, browse=FALSE) {
+            ## given 
 
+            
+          }
+          )
 
 setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="integer"),
           function(st, indices.cols, center.cols){
-            browser()
+#            browser()
             df <- st
             nr <- max(df[, indices.cols[1]]) # num rows in *orig* grid
             nc <- max(df[, indices.cols[2]]) # num cols in *orig* grid
@@ -63,8 +69,8 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
             }
             ##   originally, this irregular grid is indexed with (1,1) in the *LOWER LEFT*
             ##   the final grid returned/stored has (1,1) in the *UPPER LEFT*, in matrix index format
-            centers$lat <- centers$lat[nr:1,]
-            centers$long <- centers$long[nr:1,]
+#            centers$lat <- centers$lat[nr:1,]
+#            centers$long <- centers$long[nr:1,]
             irregGrid <- list()
             ## inner.{lat,long} are the *INTERPOLATED* grid cell boundaries
             ##  eg they are missing the outer rows/columns of the original grid
@@ -153,6 +159,7 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
               }
             }
             spp <- SpatialPolygons(poly.list, 1:(nr*nc) )
+            tmp <- new("stSpatialIrregularGrid", polygons=spp@polygons, plotOrder=spp@plotOrder, bbox=spp@bbox, proj4string=spp@proj4string  ,s.id=as.integer(1:(nr*nc)))
             return( stSpatialIrregularGrid(spp, as.integer(1:(nr*nc)))  )
           }
           )
@@ -160,7 +167,7 @@ setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="int
 
 ## Getters
 setMethod("getSid", signature(x="stSpatialIrregularGrid"),
-          function(x) return(x@s.id) )
+          function(x) return( x@s.id ) )
 ## Setters
 setReplaceMethod("setSid", signature("stSpatialIrregularGrid"),
           function(object,value){

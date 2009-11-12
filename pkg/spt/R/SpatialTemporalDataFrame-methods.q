@@ -7,9 +7,22 @@
 ##
 ############################################################
 ############################################################
+setMethod("getTid", signature(x="SpatialIrregularGridTemporalDataFrame"),
+          function(x) return( getTid(x@temporal) )        )
+setMethod("getTimedatestamps", signature(x="SpatialIrregularGridTemporalDataFrame"),
+          function(x) return( getTimedatestamps(x@temporal) )        )
+setMethod("getSid", signature(x="SpatialIrregularGridTemporalDataFrame"),
+          function(x) return( getSid(x@spatial))        )
+setMethod("getDataFrame", signature(x="SpatialIrregularGridTemporalDataFrame"),
+          function(x)return( x@data@df) )
+setMethod("getstSpatial",signature(x="SpatialIrregularGridTemporalDataFrame"),
+          function(x)return( x@spatial) )
+setMethod("getstTemporal",signature(x="SpatialIrregularGridTemporalDataFrame"),
+          function(x)return( x@temporal) )
+setMethod("getstDataFrame",signature(x="SpatialIrregularGridTemporalDataFrame"),
+          function(x)return( x@data) )
 
 SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols, time.col, format="%Y-%m-%d"){
-  browser()
   stsg <- stSpatialIrregularGrid(df, indices.cols, center.cols)
   
   tims <- as.character(df[,time.col])
@@ -20,7 +33,7 @@ SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols,
   nr <- max(df[ , indices.cols[1] ])
   nc <- max(df[ , indices.cols[2] ])
   s.id <- as.integer(1:(nr*nc))
-  ## Note that COLUMN MAJOR format is the default...
+  ## Note that COLUMN MAJOR format is the default for the S.IDs...
   new.df.sid.col <- as.integer( (df[ , indices.cols[2] ]-1) * nr + df[ , indices.cols[1] ] )
   new.df.tid.col <- match( as.character(timeDate(tims,format=format)), as.character(unique.times) )
   
@@ -29,12 +42,142 @@ SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols,
   stdf.new <- new( "stDataFrame", s.id=s.id, t.id=t.id, df=new.df )
 
   return( new("SpatialIrregularGridTemporalDataFrame", spatial=stsg, temporal=stt, data=stdf.new) )
-#  plot(stsg,col=2,axes=TRUE,border=FALSE)  
-#  map("state",add=T,interior=T)
-  
 }
 
+setMethod("getTimeBySpaceMat", signature(st="SpatialIrregularGridTemporalDataFrame", colname="character"),
+          getTimeBySpaceMat <- function(st,colname){
+            n.t <- length(getTid(st))
+            n.s <- length(getSid(st))
+            curr.df <- getDataFrame(st@data)
+            if( nrow(curr.df) != (n.t*n.s))
+              stop("getTimeBySpaceMat requires that there be no missing values")
+            dens <- matrix( curr.df[ (order(curr.df$t.id, curr.df$s.id)), colname], nrow= n.t, ncol=n.s, byrow=TRUE)
+            ## equivalently, fill it columnwise (but faster since it's already sorted by time then s.id)
+            ##dens <- matrix( curr.df[ (order(curr.df$s.id, curr.df$t.id)), colname], nrow= n.t, ncol=n.s, byrow=FALSE)
+            rownames(dens) <- paste("tid",getTid(st),sep="_")
+            colnames(dens) <- paste("sid",getSid(st),sep="_")
+            ## Quickly make sure it's in order, swapping rows as necessary.
+            class(dens)
+            timeOrder <- order( getTimedatestamps(st@temporal,"%Y-%m-%d %H:%M"))
+            dens <- dens[timeOrder,]
+            return(dens)
+          }
+          )
 
+setMethod("plot", signature(x="SpatialIrregularGridTemporalDataFrame", y="character"),
+          function(x,y,units,mov.name="tmp",browse=FALSE) {
+            ## x is the object
+            ## y is the column name to plot (eg O3 or observed_o3 or NOX or...)
+            ## units is...
+            require(animation)
+            
+            ## Assign colors.
+            plotOneDay <- function(spsp, curr.time.df, curr.df, curr.tid, obs.range, color.matlab){
+              getColors <- function( vals, range, color.map){
+                getBin <- function(val, min, stepsize) ifelse( val==min, return(1), return(ceiling( (val-(min))/stepsize) ))
+                n.cm <- length(color.map)
+                stepsize <- diff(range)/n.cm
+                bins <- sapply(vals, getBin, range[1], stepsize)
+                colors <- color.map[ bins]
+                return(colors)
+              }            
+              plotSpatial <- function(spsp, curr.time.df, curr.df, curr.tid, obs.range, color.matlab){
+                ## top plot (spatial)
+                curr.cols <- getColors( curr.df[ (curr.df$t.id==curr.tid) , y ] , obs.range, color.matlab)
+                curr.time <- format(curr.time.df[curr.tid, 2], format="%Y-%m-%d")
+                titl <- paste("Observations:",y," At Time:",curr.time)
+                plot(spsp, col= curr.cols, axes=TRUE, border=FALSE,main=titl,xlab="long",ylab="lat")
+                title(main=titl)
+                map("state",add=T,interior=T)
+              }
+              plotLegend <- function(obs.range, color.matlab, labs=10){
+                ## top plot (legend on side for spatial)
+                leg.mat <- matrix(1:length(color.matlab), ncol = 1)
+                image(t(leg.mat), axes = FALSE, col = color.matlab)
+                mylabel <- as.character(round(seq( obs.range[1], obs.range[2], length=labs ),1))
+                axis(side = 2, at = seq(from = 0 - 1/labs/2, to = 1 + 1/labs/2,length = labs), labels = mylabel)
+              }
+              plotSpaghetti <- function(time.tick, min.time, units=units){
+                getTimeBySpaceMat <- function(st,colname){
+                  n.t <- length(getTid(st))
+                  n.s <- length(getSid(st))
+                  curr.df <- getDataFrame(st@data)
+                  if( nrow(curr.df) != (n.t*n.s))
+                    stop("getTimeBySpaceMat requires that there be no missing values")
+                  dens <- matrix( curr.df[ (order(curr.df$t.id, curr.df$s.id)), colname], nrow= n.t, ncol=n.s, byrow=TRUE)
+                  ## equivalently, fill it columnwise (but faster since it's already sorted by time then s.id)
+                  ##dens <- matrix( curr.df[ (order(curr.df$s.id, curr.df$t.id)), colname], nrow= n.t, ncol=n.s, byrow=FALSE)
+                  rownames(dens) <- paste("tid",getTid(st),sep="_")
+                  colnames(dens) <- paste("sid",getSid(st),sep="_")
+                  ## Quickly make sure it's in order, swapping rows as necessary.
+                  class(dens)
+                  timeOrder <- order( getTimedatestamps(st@temporal,"%Y-%m-%d %H:%M"))
+                  dens <- dens[timeOrder,]
+                  return(dens)
+                }
+                ## bottom plot (temporal), FDA, aka spaghetti plot
+                tByS <- getTimeBySpaceMat(x, y)
+                t <- length(getTid(x))
+                n.s <- length(getSid(x))
+                x.locs <- sort(as.numeric(difftime( getTimedatestamps(x@temporal, "%Y-%m-%d %H:%M"), min(getTimedatestamps(x@temporal)), units=units)))
+                sub <- paste("Starting from", as.character( min(getTimedatestamps(x@temporal,"%Y-%m-%d %H:%M"))))
+                ylims <- range(tByS,na.rm=TRUE)
+                i <- 1
+                curr.time <- format(curr.time.df[curr.tid, 2], format="%Y-%m-%d")
+                titl <- paste("Observations:",y," At Time:",curr.time)
+                plot(x.locs, tByS[,i], type="l", col="grey", lty=3, xlab=paste("Time (",units,")",sep=""),ylab=y, sub=sub,ylim=ylims,main=titl)
+                if (n.s>1){
+                  for (i in 2:n.s){
+                    lines(x.locs, tByS[,i], col="gray",lty=3)
+                  }
+                }
+                abline(v=time.tick,lwd=3)
+              }
+
+              lay.mat <- matrix(1,3,3)  # plot spatial part
+              lay.mat[,3] <- 2          # plot spatial legend
+              lay.mat[3,] <- 3          # plot temporal part
+              layout(lay.mat)
+              ## top plot (spatial)
+##              pp("starting plotSpatial..")
+              plotSpatial(spsp, curr.time.df, curr.df, curr.tid, obs.range, color.matlab)
+              
+              ## top plot (legend on side for spatial)
+##              pp("starting plotLegend..")
+              plotLegend(obs.range, color.matlab)
+
+              ## bottom plot (temporal), FDA, aka spaghetti plot
+              curr.tim.row <- which( curr.time.df[,1]==curr.tid)
+              min.time <- min(curr.time.df[,2])
+              time.tick <- as.numeric( difftime( curr.time.df[curr.tim.row,2], min.time, units=units))
+##              pp("starting plotSpaghetti..")
+              plotSpaghetti(time.tick, min.time, units=units)
+            }
+            
+            spsp <- x@spatial
+            curr.df <- getDataFrame(x@data)
+            obs.range <- range( curr.df[,y])
+            obs.range[2] <- quantile( curr.df[,y], .995)
+            sptim <- x@temporal
+            curr.time.df <- getDataFrame(sptim, format, time.type="timeDate")
+            if (browse)
+              browser()
+            #curr.tid <- 348
+            #plotOneDay(spsp, curr.time.df, curr.df, curr.tid, obs.range, color.matlab)            
+            
+            sptMovie.ani <- function(...){
+              for (curr.tid in getTid(x)){
+                plotOneDay(spsp, curr.time.df, curr.df, curr.tid, obs.range, color.matlab)            
+                Sys.sleep(ani.options("interval"))
+              }
+            }
+            ## nmax is number of iterations,
+            ## interval is time length we pause at each step.
+#            saveSWF(sptMovie.ani(), interval = 1, swfname = "movie.swf", dev="pdf")
+            oopt = ani.options(interval = 0.1, nmax = length(getTid(x)) )
+            saveMovie(expr=sptMovie.ani(), dev = jpeg, height=1000, width=1000, outdir="/Users/blairc/TmpMovie", movietype="gif", moviename=mov.name)
+          }
+          )
 
 
 ############################################################
