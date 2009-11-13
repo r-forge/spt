@@ -1,7 +1,7 @@
 
 validstSpatialIrregularGridObject <- function(object) {
   l.n.sid <- length(object@s.id)
-  l.n.coord <- nrow(coordinates(object))
+  l.n.coord <- length(object@polygons)
   if (l.n.sid != l.n.coord )
     paste("Unequal unique spatial id (s.id), unique coordinate counts: ", l.n.sid, ", ",l.n.coord, sep="")
   if ( !identical( class(object@s.id), "integer"))

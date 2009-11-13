@@ -175,7 +175,9 @@ setMethod("plot", signature(x="SpatialIrregularGridTemporalDataFrame", y="charac
             ## interval is time length we pause at each step.
 #            saveSWF(sptMovie.ani(), interval = 1, swfname = "movie.swf", dev="pdf")
             oopt = ani.options(interval = 0.1, nmax = length(getTid(x)) )
-            saveMovie(expr=sptMovie.ani(), dev = jpeg, height=1000, width=1000, outdir="/Users/blairc/TmpMovie", movietype="gif", moviename=mov.name)
+            mov.dir <- paste(getwd(),"TmpMovie3",sep="/")
+            dir.create( mov.dir)
+            saveMovie(expr=sptMovie.ani(), dev = jpeg, height=1000, width=1000, outdir=mov.dir, movietype="gif", moviename=mov.name)
           }
           )
 
