@@ -17,7 +17,6 @@ validstTemporalObject <- function(object) {
     paste("The class of timedatestamps must be 'timeDate', was given as '",class(object@timedatestamps),"'",sep="")
   return(TRUE)
 }
-
 setValidity("stTemporal", validstTemporalObject)
 
 setMethod("show", "stTemporal",
