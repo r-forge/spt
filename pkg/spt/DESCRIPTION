@@ -1,8 +1,8 @@
 Package: spt
 Type: Package
 Title: S4 methods and classes for spatiotemporal data
-Version: 0.01-02
-Date: 2009-10-15
+Version: 0.01-03
+Date: 2009-12-12
 Author: Blair Christian
 Maintainer: Blair Christian <blair.christian@gmail.com>
 Description: A collection of S4 methods and classes for spatiotemporal data.  In particular, there are classes for spatial points, spatial grid, spatial polygons with temporal data, as well as functions like stApply for applying functions to time/space part of the data, and some functions to access online data.
@@ -10,5 +10,5 @@ License: GPL-2
 LazyLoad: no
 LazyData: no
 Depends: sp, fields, timeDate, RCurl, nlme, maps, fda, R (>= 2.9.1), methods
-Suggests: RUnit, trip, openair, spBayes, INLA, splancs
-Packaged: 2009-10-15 14:15:54 UTC; blairc
+
+

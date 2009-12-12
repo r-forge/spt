@@ -1,6 +1,5 @@
 library(sp)
 library(timeDate)
-library(RUnit)
 library(RCurl)     ## to get air explorer data
 library(maps)      ## state maps
 library(fda)       ## for plotting spatiol points (with time)
