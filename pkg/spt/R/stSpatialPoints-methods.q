@@ -14,7 +14,11 @@ setMethod("show","stSpatialPoints",
           function(object)return( getDataFrame(object)) )
 
 setMethod("summary","stSpatialPoints",
-          function(object){cat("A collection of",length(object@s.id),"points.\n") } )
+          function(object){
+            cat("A",ncol(),"vector of",length(object@s.id),"points\n")
+            ranges <- round(apply(coordinates(object),2,apply),2)
+            cat("ranging from [",paste(range[,1],sep=", "),"] to [",paste(range[,2],sep=", "),"]")
+          } )
 
 setMethod("getDataFrame", signature(x="stSpatialPoints"),
           function(x) return( data.frame(sid=x@s.id, coordinates(x) )) 

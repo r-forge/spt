@@ -23,7 +23,10 @@ setMethod("show", "stTemporal",
           function(object) return( getDataFrame(object))  )
 
 setMethod("summary", "stTemporal",
-          function(object){cat("A vector of timeDates of length",length(object@t.id),"\n") } )
+          function(object){
+            cat("A vector of",length(object@t.id),"timeDates")
+            cat("ranging from",min(getTimedatestamps(object)),"to",max(getTimedatestamps(object)) )
+          } )
 
 ## Getters
 setMethod("getTid", signature(x="stTemporal"),

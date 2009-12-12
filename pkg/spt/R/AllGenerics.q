@@ -2,7 +2,7 @@ library(sp)
 library(timeDate)
 library(RCurl)     ## to get air explorer data
 library(maps)      ## state maps
-library(fda)       ## for plotting spatiol points (with time)
+library(fda)       ## for plotting spatial points over time
 data(stateMapEnv)
 
 

@@ -22,6 +22,18 @@ setMethod("getstTemporal",signature(x="SpatialIrregularGridTemporalDataFrame"),
 setMethod("getstDataFrame",signature(x="SpatialIrregularGridTemporalDataFrame"),
           function(x)return( x@data) )
 
+setMethod("summary","SpatialIrregularGridTemporalDataFrame",
+          function(x){
+            cat("\nClass: SpatialIrregularGridTemporalDataFrame\n")
+            cat("\nGrid Size:")
+            cat("\nGrid Range:\n")
+#            summary(x@temporal)
+            }
+          )
+
+
+
+
 SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols, time.col, format="%Y-%m-%d"){
   stsg <- stSpatialIrregularGrid(df, indices.cols, center.cols)
   
@@ -228,6 +240,15 @@ setMethod("show", "SpatialPointsTemporalDataFrame",
           function(object){#show(object@metadata)
                            show(object@data)}
           )
+
+setMethod("summary","SpatialPointsTemporalDataFrame",
+          function(x){
+            cat("\nClass: SpatialPointsTemporalDataFrame\n")
+            summary(x@spatial)
+            summary(x@temporal)
+            }
+          )
+
 setMethod("getTimeBySpaceMat", signature(st="SpatialPointsTemporalDataFrame", colname="character"),
           getTimeBySpaceMat <- function(st,colname){
             n.t <- length(getTid(st))
