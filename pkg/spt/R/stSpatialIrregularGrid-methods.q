@@ -15,7 +15,9 @@ setMethod("show","stSpatialIrregularGrid",
           function(object)return( getDataFrame(object)) )
 
 setMethod("summary","stSpatialIrregularGrid",
-          function(object){cat("A collection of",length(object@s.id),"points, in a grid.\n") } )
+          function(object){
+            cat("Spatial: A collection of",length(object@s.id),"points, in a grid.\n")
+          } )
 
 setMethod("getDataFrame", signature(x="stSpatialIrregularGrid"),
           function(x) return( data.frame(sid=x@s.id, coordinates(x) )) 
@@ -43,7 +45,7 @@ setMethod("stSpatialIrregularGrid", signature(st="SpatialPolygons", indices.cols
             return( new("stSpatialIrregularGrid", polygons=st@polygons, plotOrder=st@plotOrder, bbox=st@bbox, proj4string=st@proj4string  ,s.id=indices.cols))
           })
 
-setMethod("plot", signature(x="stSpatialIrregularGrid", y="anything"),
+setMethod("plot", signature(x="stSpatialIrregularGrid", y="ANY"),
           function(x, y, units, plotLegend=TRUE, browse=FALSE) {
             ## given 
 

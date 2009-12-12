@@ -23,14 +23,32 @@ setMethod("getstDataFrame",signature(x="SpatialIrregularGridTemporalDataFrame"),
           function(x)return( x@data) )
 
 setMethod("summary","SpatialIrregularGridTemporalDataFrame",
-          function(x){
+          function(object){
             cat("\nClass: SpatialIrregularGridTemporalDataFrame\n")
-            cat("\nGrid Size:")
-            cat("\nGrid Range:\n")
-#            summary(x@temporal)
+            summary(object@spatial)
+            summary(object@temporal)
             }
           )
 
+setMethod("getTimeBySpaceMat", signature(st="SpatialIrregularGridTemporalDataFrame", colname="character"),
+          function(st,colname){
+            n.t <- length(getTid(st))
+            n.s <- length(getSid(st))
+            curr.df <- getDataFrame(st@data)
+            if( nrow(curr.df) != (n.t*n.s))
+              stop("getTimeBySpaceMat requires that there be no missing values")
+            dens <- matrix( curr.df[ (order(curr.df$t.id, curr.df$s.id)), colname], nrow= n.t, ncol=n.s, byrow=TRUE)
+            ## equivalently, fill it columnwise (but faster since it's already sorted by time then s.id)
+            ##dens <- matrix( curr.df[ (order(curr.df$s.id, curr.df$t.id)), colname], nrow= n.t, ncol=n.s, byrow=FALSE)
+            rownames(dens) <- paste("tid",getTid(st),sep="_")
+            colnames(dens) <- paste("sid",getSid(st),sep="_")
+            ## Quickly make sure it's in order, swapping rows as necessary.
+            class(dens)
+            timeOrder <- order( getTimedatestamps(st@temporal,"%Y-%m-%d %H:%M"))
+            dens <- dens[timeOrder,]
+            return(dens)
+          }
+          )
 
 
 
@@ -56,25 +74,6 @@ SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols,
   return( new("SpatialIrregularGridTemporalDataFrame", spatial=stsg, temporal=stt, data=stdf.new) )
 }
 
-setMethod("getTimeBySpaceMat", signature(st="SpatialIrregularGridTemporalDataFrame", colname="character"),
-          getTimeBySpaceMat <- function(st,colname){
-            n.t <- length(getTid(st))
-            n.s <- length(getSid(st))
-            curr.df <- getDataFrame(st@data)
-            if( nrow(curr.df) != (n.t*n.s))
-              stop("getTimeBySpaceMat requires that there be no missing values")
-            dens <- matrix( curr.df[ (order(curr.df$t.id, curr.df$s.id)), colname], nrow= n.t, ncol=n.s, byrow=TRUE)
-            ## equivalently, fill it columnwise (but faster since it's already sorted by time then s.id)
-            ##dens <- matrix( curr.df[ (order(curr.df$s.id, curr.df$t.id)), colname], nrow= n.t, ncol=n.s, byrow=FALSE)
-            rownames(dens) <- paste("tid",getTid(st),sep="_")
-            colnames(dens) <- paste("sid",getSid(st),sep="_")
-            ## Quickly make sure it's in order, swapping rows as necessary.
-            class(dens)
-            timeOrder <- order( getTimedatestamps(st@temporal,"%Y-%m-%d %H:%M"))
-            dens <- dens[timeOrder,]
-            return(dens)
-          }
-          )
 
 setMethod("plot", signature(x="SpatialIrregularGridTemporalDataFrame", y="character"),
           function(x,y,units,mov.name="tmp",browse=FALSE) {
@@ -110,23 +109,6 @@ setMethod("plot", signature(x="SpatialIrregularGridTemporalDataFrame", y="charac
                 axis(side = 2, at = seq(from = 0 - 1/labs/2, to = 1 + 1/labs/2,length = labs), labels = mylabel)
               }
               plotSpaghetti <- function(time.tick, min.time, units=units){
-                getTimeBySpaceMat <- function(st,colname){
-                  n.t <- length(getTid(st))
-                  n.s <- length(getSid(st))
-                  curr.df <- getDataFrame(st@data)
-                  if( nrow(curr.df) != (n.t*n.s))
-                    stop("getTimeBySpaceMat requires that there be no missing values")
-                  dens <- matrix( curr.df[ (order(curr.df$t.id, curr.df$s.id)), colname], nrow= n.t, ncol=n.s, byrow=TRUE)
-                  ## equivalently, fill it columnwise (but faster since it's already sorted by time then s.id)
-                  ##dens <- matrix( curr.df[ (order(curr.df$s.id, curr.df$t.id)), colname], nrow= n.t, ncol=n.s, byrow=FALSE)
-                  rownames(dens) <- paste("tid",getTid(st),sep="_")
-                  colnames(dens) <- paste("sid",getSid(st),sep="_")
-                  ## Quickly make sure it's in order, swapping rows as necessary.
-                  class(dens)
-                  timeOrder <- order( getTimedatestamps(st@temporal,"%Y-%m-%d %H:%M"))
-                  dens <- dens[timeOrder,]
-                  return(dens)
-                }
                 ## bottom plot (temporal), FDA, aka spaghetti plot
                 tByS <- getTimeBySpaceMat(x, y)
                 t <- length(getTid(x))
@@ -242,15 +224,15 @@ setMethod("show", "SpatialPointsTemporalDataFrame",
           )
 
 setMethod("summary","SpatialPointsTemporalDataFrame",
-          function(x){
+          function(object){
             cat("\nClass: SpatialPointsTemporalDataFrame\n")
-            summary(x@spatial)
-            summary(x@temporal)
+            summary(object@spatial)
+            summary(object@temporal)
             }
           )
 
 setMethod("getTimeBySpaceMat", signature(st="SpatialPointsTemporalDataFrame", colname="character"),
-          getTimeBySpaceMat <- function(st,colname){
+          function(st,colname){
             n.t <- length(getTid(st))
             n.s <- length(getSid(st))
             dens <- matrix(NA, nrow= n.t, ncol=n.s)

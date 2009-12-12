@@ -15,9 +15,9 @@ setMethod("show","stSpatialPoints",
 
 setMethod("summary","stSpatialPoints",
           function(object){
-            cat("A",ncol(),"vector of",length(object@s.id),"points\n")
-            ranges <- round(apply(coordinates(object),2,apply),2)
-            cat("ranging from [",paste(range[,1],sep=", "),"] to [",paste(range[,2],sep=", "),"]")
+            cat("Spatial: A",ncol(coordinates(object) ),"dim vector of",length(object@s.id),"points\n")
+            ranges <- round(apply(coordinates(object),2,range),2)
+            cat("\t ranging from [",paste(ranges[1,],collapse=", "),"] to [",paste(ranges[2,],collapse=", "),"]\n")
           } )
 
 setMethod("getDataFrame", signature(x="stSpatialPoints"),

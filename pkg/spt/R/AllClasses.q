@@ -1,9 +1,5 @@
-
-
 setClass("stTemporal", representation(timedatestamps="timeDate", t.id="integer"),
          prototype(timedatestamps=timeDate(NULL), t.id=integer() )  )
-
-
 setClass("stSpatial", representation(s.id="integer","VIRTUAL") )
 
 ## note that order matters when it comes to looking for which method to call
@@ -16,12 +12,6 @@ setClass("stDataFrame",
          representation(s.id="integer",
                         t.id="integer",
                         df="data.frame"))
-
-#setClass("SpatialTemporalDataFrame",
-#         representation(spatial="stSpatial",
-#                        temporal="stTemporal",
-#                        data="stDataFrame"))
-
 
 setClass("SpatialPointsTemporalDataFrame",
          representation(spatial="stSpatialPoints",

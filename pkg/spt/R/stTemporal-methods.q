@@ -24,8 +24,8 @@ setMethod("show", "stTemporal",
 
 setMethod("summary", "stTemporal",
           function(object){
-            cat("A vector of",length(object@t.id),"timeDates")
-            cat("ranging from",min(getTimedatestamps(object)),"to",max(getTimedatestamps(object)) )
+            cat("Temporal: A vector of",length(object@t.id),"timeDates\n")
+            cat("\t ranging from",min(getTimedatestamps(object)),"to",max(getTimedatestamps(object)), "\n" )
           } )
 
 ## Getters
