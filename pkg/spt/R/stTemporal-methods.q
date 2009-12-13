@@ -1,8 +1,9 @@
 
 setMethod("initialize", "stTemporal",
-          function(.Object, timedatestamps, t.id){
+          function(.Object, timedatestamps, t.id, timeFormat){
             .Object@timedatestamps <- timedatestamps
             .Object@t.id <- t.id
+            .Object@timeFormat <- timeFormat
             return(.Object)
           }
           )
@@ -19,31 +20,37 @@ validstTemporalObject <- function(object) {
 }
 setValidity("stTemporal", validstTemporalObject)
 
+
+## Getters
+setMethod("getTid", signature(x="stTemporal"),
+          function(x) return(x@t.id) )
+
+setMethod("getTimeFormat", signature(x="stTemporal"),
+          function(x)return( x@timeFormat))
+
+setMethod("getTimedatestamps", signature(x="stTemporal"),
+          function(x, format=getTimeFormat(x) )return( format(x@timedatestamps, format)))
+
+
+
+setMethod("getDataFrame", signature(x="stTemporal"),
+          function(x, time.type="char") {
+            if (time.type != "char"){
+              return(data.frame(tid=x@t.id, timedatestamps=format(x@timedatestamps,getTimeFormat(x) )))
+            } else {
+              return(data.frame(tid=x@t.id, timedatestamps=format(x@timedatestamps,format) ) )
+            }
+          }
+          )
+
 setMethod("show", "stTemporal",
           function(object) return( getDataFrame(object))  )
 
 setMethod("summary", "stTemporal",
           function(object){
             cat("Temporal: A vector of",length(object@t.id),"timeDates\n")
-            cat("\t ranging from",min(getTimedatestamps(object)),"to",max(getTimedatestamps(object)), "\n" )
+            cat("\t ranging from",min(getTimedatestamps(object, format=getTimeFormat(object))),"to",max(getTimedatestamps(object, format=getTimeFormat(object))), "\n" )
           } )
-
-## Getters
-setMethod("getTid", signature(x="stTemporal"),
-          function(x) return(x@t.id) )
-
-setMethod("getTimedatestamps", signature(x="stTemporal"),
-          function(x, format="%Y-%m-%d")return( format(x@timedatestamps, format=format)))
-
-setMethod("getDataFrame", signature(x="stTemporal"),
-          function(x, format="%Y-%m-%d", time.type="char") {
-            if (time.type=="char"){
-              return(data.frame(tid=x@t.id, timedatestamps=format(x@timedatestamps,format)))
-            } else {
-              return(data.frame(tid=x@t.id, timedatestamps=x@timedatestamps) )
-            }
-          }
-          )
 
 ## Deprecated; moved to getTimedatestamps
 #### Given a format string, return the t.id which match it?
@@ -66,13 +73,22 @@ setReplaceMethod("setTimedatestamps", signature("stTemporal"),
             return(object)
           }
           )
+setReplaceMethod("setTimeFormat", signature("stTemporal"),
+          function(object, value){
+            ## TBD FIX
+            ## do we need to change the timedate format of the timedatestamps
+            validObject(value)
+            object@timeFormat <- value
+            return(object)
+          }
+          )
 
 
 
 ## Constructor
-stTemporal <- function(timeVals, format=NULL, t.id=as.integer(1:length(timeVals)) ){
+stTemporal <- function(timeVals, format="%Y-%m-%d", t.id=as.integer(1:length(timeVals)) ){
   td <- timeDate(timeVals, format)
-  return(new("stTemporal", timedatestamps=td, t.id=t.id))
+  return(new("stTemporal", timedatestamps=td, t.id=t.id, timeFormat=format))
 }
 
 ## need to do anthoer subset for signature x="character" instead of timedate?
@@ -164,6 +180,8 @@ setMethod("stJoin",c(x="stTemporal",y="stTemporal"),
           function(x,y){
             ## Issue new unique IDs?
             ## Assumes x, y in order??
+            ## Assumes they have the same format???
+            ## FIX TBD above
             orig.x <- getTimedatestamps(x)
             orig.y <- getTimedatestamps(y)
             new.tds <- sort(unique( c(orig.x, orig.y) ) )
@@ -175,14 +193,3 @@ setMethod("stJoin",c(x="stTemporal",y="stTemporal"),
           }
           )
 
-## had problem with initializing after setClass("stTemporal") a lot...
-## don't know why.
-##
-##setMethod("initialize", "stTemporal", function(.Object, ...) {
-##  .Object <- callNextMethod()
-##  if(length(.Object@t.id) != length(.Object@timedatestampsstamp))
-##    stop("specified t.id and timedatestamp of different lengths")
-##  .Object
-##})
-
-##getMethod("initialize","stTemporal")

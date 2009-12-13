@@ -1,5 +1,5 @@
-setClass("stTemporal", representation(timedatestamps="timeDate", t.id="integer"),
-         prototype(timedatestamps=timeDate(NULL), t.id=integer() )  )
+setClass("stTemporal", representation(timedatestamps="timeDate", t.id="integer", timeFormat="character"),
+         prototype(timedatestamps=timeDate(NULL), t.id=integer(), timeFormat="%Y-%m-%d" )  )
 setClass("stSpatial", representation(s.id="integer","VIRTUAL") )
 
 ## note that order matters when it comes to looking for which method to call
@@ -20,6 +20,11 @@ setClass("SpatialPointsTemporalDataFrame",
 
 setClass("SpatialIrregularGridTemporalDataFrame",
          representation(spatial="stSpatialIrregularGrid",
+                        temporal="stTemporal",
+                        data="stDataFrame"))
+
+setClass("SpatialGridTemporalDataFrame",
+         representation(spatial="stSpatialGrid",
                         temporal="stTemporal",
                         data="stDataFrame"))
 

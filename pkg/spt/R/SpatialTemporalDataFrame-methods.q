@@ -3,6 +3,84 @@
 ############################################################
 ############################################################
 ##
+## SPATIALGRIDTEMPORALDATAFRAME follows;
+##
+############################################################
+############################################################
+setMethod("getTid", signature(x="SpatialGridTemporalDataFrame"),
+          function(x) return( getTid(x@temporal) )        )
+setMethod("getTimedatestamps", signature(x="SpatialGridTemporalDataFrame"),
+          function(x, format=getTimeFormat(x)) return( getTimedatestamps(x@temporal, format=format) )        )
+setMethod("getTimeFormat", signature(x="SpatialGridTemporalDataFrame"),
+          function(x) return( getTimeFormat(x@temporal) )        )
+setMethod("getSid", signature(x="SpatialGridTemporalDataFrame"),
+          function(x) return( getSid(x@spatial))        )
+setMethod("getDataFrame", signature(x="SpatialGridTemporalDataFrame"),
+          function(x)return( x@data@df) )
+setMethod("getstSpatial",signature(x="SpatialGridTemporalDataFrame"),
+          function(x)return( x@spatial) )
+setMethod("getstTemporal",signature(x="SpatialGridTemporalDataFrame"),
+          function(x)return( x@temporal) )
+setMethod("getstDataFrame",signature(x="SpatialGridTemporalDataFrame"),
+          function(x)return( x@data) )
+
+setMethod("summary","SpatialGridTemporalDataFrame",
+          function(object){
+            cat("\nClass: SpatialGridTemporalDataFrame\n")
+            summary(object@spatial)
+            summary(object@temporal)
+            }
+          )
+
+setMethod("getTimeBySpaceMat", signature(st="SpatialGridTemporalDataFrame", colname="character"),
+          function(st,colname){
+            n.t <- length(getTid(st))
+            n.s <- length(getSid(st))
+            curr.df <- getDataFrame(st@data)
+            if( nrow(curr.df) != (n.t*n.s))
+              stop("getTimeBySpaceMat requires that there be no missing values")
+            dens <- matrix( curr.df[ (order(curr.df$t.id, curr.df$s.id)), colname], nrow= n.t, ncol=n.s, byrow=TRUE)
+            ## equivalently, fill it columnwise (but faster since it's already sorted by time then s.id)
+            ##dens <- matrix( curr.df[ (order(curr.df$s.id, curr.df$t.id)), colname], nrow= n.t, ncol=n.s, byrow=FALSE)
+            rownames(dens) <- paste("tid",getTid(st),sep="_")
+            colnames(dens) <- paste("sid",getSid(st),sep="_")
+            ## Quickly make sure it's in order, swapping rows as necessary.
+            class(dens)
+            timeOrder <- order( getTimedatestamps(st@temporal,"%Y-%m-%d %H:%M"))
+            dens <- dens[timeOrder,]
+            return(dens)
+          }
+          )
+
+
+
+SpatialGridTemporalDataFrame <- function(df, indices.cols, center.cols, time.col, format="%Y-%m-%d"){
+  stsg <- stSpatialGrid(df, indices.cols, center.cols)
+  
+  tims <- as.character(df[,time.col])
+  unique.times <- timeDate(unique(tims), format=format)
+  t.id <- as.integer(1:length(unique.times))
+  stt <- new("stTemporal", t.id=t.id, timedatestamps=unique.times, timeFormat=format)
+
+  nr <- max(df[ , indices.cols[1] ])
+  nc <- max(df[ , indices.cols[2] ])
+  s.id <- as.integer(1:(nr*nc))
+  ## Note that COLUMN MAJOR format is the default for the S.IDs...
+  new.df.sid.col <- as.integer( (df[ , indices.cols[2] ]-1) * nr + df[ , indices.cols[1] ] )
+  new.df.tid.col <- match( as.character(timeDate(tims,format=format)), as.character(unique.times) )
+  
+  new.df <- data.frame( df[, -c(indices.cols, center.cols, time.col)], new.df.tid.col, new.df.sid.col)  
+  names(new.df) <- c(names(df)[-c(indices.cols, center.cols, time.col)], "t.id","s.id")  
+  stdf.new <- new( "stDataFrame", s.id=s.id, t.id=t.id, df=new.df )
+
+  return( new("SpatialGridTemporalDataFrame", spatial=stsg, temporal=stt, data=stdf.new) )
+}
+
+
+
+############################################################
+############################################################
+##
 ## SPATIALIRREGULARGRIDTEMPORALDATAFRAME follows;
 ##
 ############################################################
@@ -10,7 +88,9 @@
 setMethod("getTid", signature(x="SpatialIrregularGridTemporalDataFrame"),
           function(x) return( getTid(x@temporal) )        )
 setMethod("getTimedatestamps", signature(x="SpatialIrregularGridTemporalDataFrame"),
-          function(x) return( getTimedatestamps(x@temporal) )        )
+          function(x, format=getTimeFormat(x)) return( getTimedatestamps(x@temporal, format=format) )        )
+setMethod("getTimeFormat", signature(x="SpatialIrregularGridTemporalDataFrame"),
+          function(x) return( getTimeFormat(x@temporal) )        )
 setMethod("getSid", signature(x="SpatialIrregularGridTemporalDataFrame"),
           function(x) return( getSid(x@spatial))        )
 setMethod("getDataFrame", signature(x="SpatialIrregularGridTemporalDataFrame"),
@@ -58,7 +138,7 @@ SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols,
   tims <- as.character(df[,time.col])
   unique.times <- timeDate(unique(tims), format=format)
   t.id <- as.integer(1:length(unique.times))
-  stt <- new("stTemporal", t.id=t.id, timedatestamps=unique.times)
+  stt <- new("stTemporal", t.id=t.id, timedatestamps=unique.times, timeFormat=format)
 
   nr <- max(df[ , indices.cols[1] ])
   nc <- max(df[ , indices.cols[2] ])
@@ -95,7 +175,7 @@ setMethod("plot", signature(x="SpatialIrregularGridTemporalDataFrame", y="charac
               plotSpatial <- function(spsp, curr.time.df, curr.df, curr.tid, obs.range, color.matlab){
                 ## top plot (spatial)
                 curr.cols <- getColors( curr.df[ (curr.df$t.id==curr.tid) , y ] , obs.range, color.matlab)
-                curr.time <- format(curr.time.df[curr.tid, 2], format="%Y-%m-%d")
+                curr.time <- format(curr.time.df[curr.tid, 2], format=timeFormat(spsp))
                 titl <- paste("Observations:",y," At Time:",curr.time)
                 plot(spsp, col= curr.cols, axes=TRUE, border=FALSE,main=titl,xlab="long",ylab="lat")
                 title(main=titl)
@@ -208,7 +288,9 @@ setMethod("getSpatialPoints", signature(x="SpatialPointsTemporalDataFrame"),
 setMethod("getTid", signature(x="SpatialPointsTemporalDataFrame"),
           function(x) return(x@temporal@t.id) )
 setMethod("getTimedatestamps", signature(x="SpatialPointsTemporalDataFrame"),
-          function(x,format="%Y-%m-%d")return( getTimedatestamps(x@temporal,format)))
+          function(x, format=getTimeFormat(x) )return( getTimedatestamps(x@temporal, format=format)))
+setMethod("getTimeFormat", signature(x="SpatialPointsTemporalDataFrame"),
+          function(x)return( getTimeFormat(x@temporal)))
 setMethod("getDataFrame", signature(x="SpatialPointsTemporalDataFrame"),
           function(x)return( x@data@df) )
 setMethod("getstSpatial",signature(x="SpatialPointsTemporalDataFrame"),
@@ -475,7 +557,7 @@ SpatialPointsTemporalDataFrame <- function( stdf, location.col, time.col, format
     pp("Creating an stTemporal object",Sys.time())
   unique.times <- timeDate(unique(tims), format=format)
   t.id <- 1:length(unique.times)
-  stt <- new("stTemporal", t.id=t.id, timedatestamps=unique.times)
+  stt <- new("stTemporal", t.id=t.id, timedatestamps=unique.times, timeFormat=format)
 
   ## construct stdf by removing the time and coordinate information.
   ## replace them with 2 new columns, s.id, t.id, and put in the corresponding
