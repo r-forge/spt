@@ -55,7 +55,6 @@ setMethod("plot", signature(x="stSpatialIrregularGrid", y="ANY"),
 
 setMethod("stSpatialIrregularGrid", signature(st="data.frame", indices.cols="integer"),
           function(st, indices.cols, center.cols){
-#            browser()
             df <- st
             nr <- max(df[, indices.cols[1]]) # num rows in *orig* grid
             nc <- max(df[, indices.cols[2]]) # num cols in *orig* grid

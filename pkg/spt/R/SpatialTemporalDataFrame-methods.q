@@ -133,8 +133,7 @@ setMethod("getTimeBySpaceMat", signature(st="SpatialIrregularGridTemporalDataFra
 
 
 SpatialIrregularGridTemporalDataFrame <- function(df, indices.cols, center.cols, time.col, format="%Y-%m-%d"){
-  stsg <- stSpatialIrregularGrid(df, indices.cols, center.cols)
-  
+  stsg <- stSpatialIrregularGrid(df, indices.cols, center.cols)  
   tims <- as.character(df[,time.col])
   unique.times <- timeDate(unique(tims), format=format)
   t.id <- as.integer(1:length(unique.times))
