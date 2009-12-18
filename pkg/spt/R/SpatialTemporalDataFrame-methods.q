@@ -316,22 +316,32 @@ setMethod("getTimeBySpaceMat", signature(st="SpatialPointsTemporalDataFrame", co
           function(st,colname){
             n.t <- length(getTid(st))
             n.s <- length(getSid(st))
-            dens <- matrix(NA, nrow= n.t, ncol=n.s)
-            rownames(dens) <- paste("tid",getTid(st),sep="_")
-            colnames(dens) <- paste("sid",getSid(st),sep="_")
-            id.pairs <- getDataFrame(st)[c("s.id","t.id")]
-            for (i in 1:n.t){
-              for (j in 1:n.s){
-                tidMatches <- id.pairs$"t.id" == getTid(st)[i]
-                sidMatches <- id.pairs$"s.id" == getSid(st)[j]
-                if ( sum( tidMatches & sidMatches)==1){
-                  dens[i,j] <- getDataFrame(st)[ tidMatches & sidMatches, colname]
-                }
-              }
-            }
+#            rownames(dens) <- paste("tid",getTid(st),sep="_")
+#            colnames(dens) <- paste("sid",getSid(st),sep="_")
+#            id.pairs <- getDataFrame(st)[c("s.id","t.id")]
+            dens <- t(reshape( getDataFrame(st)[c("s.id","t.id",colname)],
+                              timevar="t.id", v.names=colname, idvar="s.id", direction="wide"))[2:(n.t+1),]
+
+            tids <- unique( getDataFrame(st)$"t.id" )
+            rownames(dens) <- tids
+            colnames(dens) <- unique( getDataFrame(st)$"s.id" )
+            head(dens)
+#            for (i in 1:n.t){
+#              for (j in 1:n.s){
+#                tidMatches <- id.pairs$"t.id" == getTid(st)[i]
+#                sidMatches <- id.pairs$"s.id" == getSid(st)[j]
+#                if ( sum( tidMatches & sidMatches)==1){
+#                  dens[i,j] <- getDataFrame(st)[ tidMatches & sidMatches, colname]
+#                }
+#              }
+#            }
             ## Quickly make sure it's in order, swapping rows as necessary.
             class(dens)
-            timeOrder <- order( getTimedatestamps(st,"%Y-%m-%d %H:%M"))
+#            timeOrder <- order( getTimedatestamps(st,"%Y-%m-%d %H:%M"))
+
+            ## need to write a getTimedatestamps methods for signature integer (tids)
+            timeOrder <- order( getTimedatestamps(tids,"%Y-%m-%d %H:%M"))
+            
             dens <- dens[timeOrder,]
             return(dens)
           }
