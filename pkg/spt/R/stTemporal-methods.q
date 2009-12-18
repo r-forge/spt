@@ -28,18 +28,32 @@ setMethod("getTid", signature(x="stTemporal"),
 setMethod("getTimeFormat", signature(x="stTemporal"),
           function(x)return( x@timeFormat))
 
-setMethod("getTimedatestamps", signature(x="stTemporal"),
-          function(x, format=getTimeFormat(x) )return( format(x@timedatestamps, format)))
+setMethod("getTimedatestamps", signature(x="stTemporal", y="character"),
+          function(x, y )return( format(x@timedatestamps, y)))
 
+setMethod("getTimedatestamps", signature(x="stTemporal", y="missing"),
+          function( x )return( format(x@timedatestamps, format=getTimeFormat(x)) ))
+
+setMethod("getTimedatestamps", signature(x="stTemporal", y="integer"),
+          function(x, y, format=getTimeFormat(x) ){
+            tids <- getTid(x)
+            indices <- match(y, tids)
+            return( format(x@timedatestamps[indices], format))
+          }
+          )
+
+setMethod("getTimedatestamps", signature(x="stTemporal", y="numeric"),
+          function(x, y, format=getTimeFormat(x) ){
+            tids <- getTid(x)
+            indices <- match(y, tids)
+            return( format(x@timedatestamps[indices], format))
+          }
+          )
 
 
 setMethod("getDataFrame", signature(x="stTemporal"),
-          function(x, time.type="char") {
-            if (time.type != "char"){
-              return(data.frame(tid=x@t.id, timedatestamps=format(x@timedatestamps,getTimeFormat(x) )))
-            } else {
-              return(data.frame(tid=x@t.id, timedatestamps=format(x@timedatestamps,format) ) )
-            }
+          function( x, format= getTimeFormat(x) ) {
+            return(data.frame(tid=x@t.id, timedatestamps=format(x@timedatestamps,format) ) )
           }
           )
 

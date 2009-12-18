@@ -55,7 +55,7 @@ setGeneric("getSpatialGrid", function(x){ standardGeneric("getSpatialGrid")})
 
 setGeneric("getTid", function(x){ standardGeneric("getTid")})
 ##setGeneric("periodicity", function(x){ standardGeneric("periodicity")}) ## TBD, Fix
-setGeneric("getTimedatestamps", function(x, ...){ standardGeneric("getTimedatestamps")})
+setGeneric("getTimedatestamps", function(x, y, ...){ standardGeneric("getTimedatestamps")})
 setGeneric("getTimeFormat", function(x, ...){ standardGeneric("getTimeFormat")})
 ##setGeneric("getTimeByFormat", function(x, format){ standardGeneric("getTimeByFormat")}) ## DEPRECATED
 

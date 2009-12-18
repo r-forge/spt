@@ -9,8 +9,10 @@
 ############################################################
 setMethod("getTid", signature(x="SpatialGridTemporalDataFrame"),
           function(x) return( getTid(x@temporal) )        )
-setMethod("getTimedatestamps", signature(x="SpatialGridTemporalDataFrame"),
-          function(x, format=getTimeFormat(x)) return( getTimedatestamps(x@temporal, format=format) )        )
+
+#setMethod("getTimedatestamps", signature(x="SpatialGridTemporalDataFrame"),
+#          function(x, format=getTimeFormat(x)) return( getTimedatestamps(x@temporal, format=format) )  )
+
 setMethod("getTimeFormat", signature(x="SpatialGridTemporalDataFrame"),
           function(x) return( getTimeFormat(x@temporal) )        )
 setMethod("getSid", signature(x="SpatialGridTemporalDataFrame"),
@@ -87,8 +89,21 @@ SpatialGridTemporalDataFrame <- function(df, indices.cols, center.cols, time.col
 ############################################################
 setMethod("getTid", signature(x="SpatialIrregularGridTemporalDataFrame"),
           function(x) return( getTid(x@temporal) )        )
-setMethod("getTimedatestamps", signature(x="SpatialIrregularGridTemporalDataFrame"),
-          function(x, format=getTimeFormat(x)) return( getTimedatestamps(x@temporal, format=format) )        )
+
+setMethod("getTimedatestamps", signature(x="SpatialIrregularGridTemporalDataFrame", y="missing"),
+          function(x) return( getTimedatestamps(x@temporal, getTimeFormat(x) ) )        )
+
+setMethod("getTimedatestamps", signature(x="SpatialIrregularGridTemporalDataFrame", y="character"),
+          function(x, y) return( getTimedatestamps(x@temporal, y) )        )
+
+setMethod("getTimedatestamps", signature(x="SpatialIrregularGridTemporalDataFrame", y="numeric"),
+          function(x, y, format=getTimeFormat(x)) return( getTimedatestamps(x@temporal, y, format=format) )        )
+
+setMethod("getTimedatestamps", signature(x="SpatialIrregularGridTemporalDataFrame", y="integer"),
+          function(x, y, format=getTimeFormat(x)) return( getTimedatestamps(x@temporal, y, format=format) )        )
+
+
+
 setMethod("getTimeFormat", signature(x="SpatialIrregularGridTemporalDataFrame"),
           function(x) return( getTimeFormat(x@temporal) )        )
 setMethod("getSid", signature(x="SpatialIrregularGridTemporalDataFrame"),
@@ -286,8 +301,19 @@ setMethod("getSpatialPoints", signature(x="SpatialPointsTemporalDataFrame"),
           function(x)return( new("SpatialPoints", coords=x@spatial@coords, bbox=x@spatial@bbox, proj4string = x@spatial@proj4string)) )
 setMethod("getTid", signature(x="SpatialPointsTemporalDataFrame"),
           function(x) return(x@temporal@t.id) )
-setMethod("getTimedatestamps", signature(x="SpatialPointsTemporalDataFrame"),
-          function(x, format=getTimeFormat(x) )return( getTimedatestamps(x@temporal, format=format)))
+
+setMethod("getTimedatestamps", signature(x="SpatialPointsTemporalDataFrame",y="missing"),
+          function(x )return( getTimedatestamps(x@temporal, getTimeFormat(x) )))
+
+setMethod("getTimedatestamps", signature(x="SpatialPointsTemporalDataFrame",y="character"),
+          function(x, y )return( getTimedatestamps(x@temporal, y)))
+
+setMethod("getTimedatestamps", signature(x="SpatialPointsTemporalDataFrame",y="integer"),
+          function(x, y, format=getTimeFormat(x) )return( getTimedatestamps(x@temporal, y, format=format)))
+
+setMethod("getTimedatestamps", signature(x="SpatialPointsTemporalDataFrame",y="numeric"),
+          function(x, y, format=getTimeFormat(x) )return( getTimedatestamps(x@temporal, y, format=format)))
+
 setMethod("getTimeFormat", signature(x="SpatialPointsTemporalDataFrame"),
           function(x)return( getTimeFormat(x@temporal)))
 setMethod("getDataFrame", signature(x="SpatialPointsTemporalDataFrame"),
@@ -316,32 +342,14 @@ setMethod("getTimeBySpaceMat", signature(st="SpatialPointsTemporalDataFrame", co
           function(st,colname){
             n.t <- length(getTid(st))
             n.s <- length(getSid(st))
-#            rownames(dens) <- paste("tid",getTid(st),sep="_")
-#            colnames(dens) <- paste("sid",getSid(st),sep="_")
-#            id.pairs <- getDataFrame(st)[c("s.id","t.id")]
             dens <- t(reshape( getDataFrame(st)[c("s.id","t.id",colname)],
                               timevar="t.id", v.names=colname, idvar="s.id", direction="wide"))[2:(n.t+1),]
 
             tids <- unique( getDataFrame(st)$"t.id" )
-            rownames(dens) <- tids
-            colnames(dens) <- unique( getDataFrame(st)$"s.id" )
-            head(dens)
-#            for (i in 1:n.t){
-#              for (j in 1:n.s){
-#                tidMatches <- id.pairs$"t.id" == getTid(st)[i]
-#                sidMatches <- id.pairs$"s.id" == getSid(st)[j]
-#                if ( sum( tidMatches & sidMatches)==1){
-#                  dens[i,j] <- getDataFrame(st)[ tidMatches & sidMatches, colname]
-#                }
-#              }
-#            }
+            rownames(dens) <- paste("tid", tids,sep="_")
+            colnames(dens) <- paste("sid", unique( getDataFrame(st)$"s.id"), sep="_" )
             ## Quickly make sure it's in order, swapping rows as necessary.
-            class(dens)
-#            timeOrder <- order( getTimedatestamps(st,"%Y-%m-%d %H:%M"))
-
-            ## need to write a getTimedatestamps methods for signature integer (tids)
-            timeOrder <- order( getTimedatestamps(tids,"%Y-%m-%d %H:%M"))
-            
+            timeOrder <- order( getTimedatestamps(st, tids,"%Y-%m-%d %H:%M"))
             dens <- dens[timeOrder,]
             return(dens)
           }
