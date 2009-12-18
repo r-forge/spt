@@ -108,6 +108,19 @@ test.getTimeBySpaceMat <- function(){
   colnames(checkMat) <- paste("sid",1:2,sep="_")
   rownames(checkMat) <- paste("tid",1:3,sep="_")
   checkEquals(denseMat, checkMat)
+
+  ## Test 2: make sure that it's in order...
+
+  stdf <- data.frame( times=c("2012-12-12","2012-12-12", "2008-09-29","2008-12-14" ), lat=c(31,33,33,31), long=c(-81,-80,-80,-81), obs=c(50, 71, 10, 20) )
+  location.col <- 3:2
+  time.col <- 1
+  tmp <- SpatialPointsTemporalDataFrame(stdf, location.col, time.col)
+  denseMat <- getTimeBySpaceMat(tmp, "obs")
+  checkMat <- cbind(c(NA,20,50),c(10,NA,71) )
+  colnames(checkMat) <- paste("sid",1:2,sep="_")
+  rownames(checkMat) <- paste("tid",c(2:3,1),sep="_")
+  checkEquals(denseMat, checkMat)
+  
 }
 
 test.stJoin <- function(){

@@ -63,7 +63,7 @@ setMethod("show", "stTemporal",
 setMethod("summary", "stTemporal",
           function(object){
             cat("Temporal: A vector of",length(object@t.id),"timeDates\n")
-            cat("\t ranging from",min(getTimedatestamps(object, format=getTimeFormat(object))),"to",max(getTimedatestamps(object, format=getTimeFormat(object))), "\n" )
+            cat("\t ranging from",min(getTimedatestamps(object)),"to",max(getTimedatestamps(object)), "\n" )
           } )
 
 ## Deprecated; moved to getTimedatestamps

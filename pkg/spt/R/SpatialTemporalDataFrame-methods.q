@@ -344,7 +344,6 @@ setMethod("getTimeBySpaceMat", signature(st="SpatialPointsTemporalDataFrame", co
             n.s <- length(getSid(st))
             dens <- t(reshape( getDataFrame(st)[c("s.id","t.id",colname)],
                               timevar="t.id", v.names=colname, idvar="s.id", direction="wide"))[2:(n.t+1),]
-
             tids <- unique( getDataFrame(st)$"t.id" )
             rownames(dens) <- paste("tid", tids,sep="_")
             colnames(dens) <- paste("sid", unique( getDataFrame(st)$"s.id"), sep="_" )

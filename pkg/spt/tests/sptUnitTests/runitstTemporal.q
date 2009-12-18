@@ -79,8 +79,23 @@ test.getTimedatestamps <- function(){
   ftest <- getTimedatestamps(this,format)
   checkEquals(ftest[1], "09/29/2008")
 
+  this <- stTemporal(timeVals=c("2008-09-29","2009-01-14","2012-12-12"),format="%Y-%m-%d")
+  format <- "%Y-%m-%d"
+  ftest <- getTimedatestamps(this, y=as.integer(c(3,1,2)) ,format)
+  checkEquals(ftest, c("2012-12-12", "2008-09-29", "2009-01-14"))
+  
 }
+  
+test.stGetDataFrame <- function(){
+  testClassName <- "stTemporal"
+  t1 <- stTemporal(timeVals=c("2008-09-29","2009-01-14","2012-12-12"),format="%Y-%m-%d")
+  df1 <- data.frame( tid=as.integer(1:3), timedatestamps=c("2008-09-29","2009-01-14","2012-12-12") )
+  checkEquals(getDataFrame(t1), df1)
 
+  df2 <- data.frame( tid=as.integer(1:3), timedatestamps=c("09/29/2008","01/14/2009","12/12/2012") )
+  checkEquals(getDataFrame(t1,format = "%m/%d/%Y"), df2)
+
+}
 
 test.stJoin <- function(){
   testClassName <- "stTemporal"
@@ -118,11 +133,11 @@ test.stJoin <- function(){
 
   
   t1.c <- new("stTemporal",
-              timedatestamps=timeDate(c("2008-09-29","2012-12-12","2009-01-14"),format="%Y-%m-%d"),
-              t.id <- as.integer(5:7))
+              timedatestamps=timeDate(c("2008-09-29","2012-12-12","2009-01-14")),
+              t.id = as.integer(5:7), timeFormat="%Y-%m-%d")
   t2.c <- new("stTemporal",
-              timedatestamps=timeDate(c("2020-01-11","2008-09-30"),format="%Y-%m-%d"),
-              t.id <- as.integer(10:11))
+              timedatestamps=timeDate(c("2020-01-11","2008-09-30")),
+              t.id=as.integer(10:11), timeFormat="%Y-%m-%d")
 
   j <- stJoin(t1.c, t2.c)
   checkEquals(getTimedatestamps(j$stTemporal), c("2008-09-29", "2008-09-30", "2009-01-14", "2012-12-12", "2020-01-11"))
