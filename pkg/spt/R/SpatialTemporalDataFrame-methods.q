@@ -337,8 +337,9 @@ setMethod("summary","SpatialPointsTemporalDataFrame",
             summary(object@temporal)
             n.miss <- sum( is.na(object@data@df))
             n.vals <- ( ncol(object@data@df)-2) * nrow(object@data@df)
-            cat("\nMissingness: Additionally,",n.miss,"of",n.vals,"values, or about",round(n.miss/n.vals,3)*100,"% are missing\n")
-            }
+            cat("\nMissingness: Additionally out of", (ncol(object@data@df)-2), "data columns,\n")
+            cat(n.miss, "of", n.vals, "values, or about", round(n.miss/n.vals,3)*100, "% are missing\n")
+          }
           )
 
 setMethod("getTimeBySpaceMat", signature(st="SpatialPointsTemporalDataFrame", colname="character"),
@@ -471,6 +472,9 @@ setMethod("stSubset",c(x="SpatialPointsTemporalDataFrame",bounds="timeDate"),
           function(x,bounds){
             ## 1) subset the temporalal part.
             new.stt <- stSubset(x@temporal, bounds)
+
+            ## TBD/Fix
+            ## If null, return NA?
 
             ## 2) Take the temporal part t.id, and then reduce the data frame
             new.stdf <- stUpdate(x@data, new.stt@t.id, type="temporal")

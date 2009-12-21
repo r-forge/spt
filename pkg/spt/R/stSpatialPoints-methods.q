@@ -75,6 +75,8 @@ setMethod("stSubset", signature(x="stSpatialPoints", bounds="integer"),
           function(x,bounds){
             new.members <- which( x@s.id %in% bounds)
             x@s.id <- x@s.id[new.members]
+            if (length(new.members)==0)  
+              stop("There are no points in the selected region")
             if (length(new.members)==1) {
               x@coords <- t(as.matrix(x@coords[new.members,]))
             } else {
@@ -111,6 +113,9 @@ setMethod("stSubset", signature(x="stSpatialPoints", bounds="matrix"),
               return( all(point >= bounds[1,]) & all(point < bounds[2,])   )
             }
             new.members <- which( apply(coordinates(x), 1, inside, bounds))
+            if (length(new.members)==0)  
+              stop("There are no points in the selected region")
+
             ## Fix adjust bbox to be correct?
             ## Fix: figure out the numeric/matrix issue...
             x@bbox <- t(bounds)

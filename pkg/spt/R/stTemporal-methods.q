@@ -109,6 +109,12 @@ stTemporal <- function(timeVals, format="%Y-%m-%d", t.id=as.integer(1:length(tim
 setMethod("stSubset", signature(x="stTemporal", bounds="timeDate"),
           function(x,bounds){
             new.members <- which( x@timedatestamps >= bounds[1] & x@timedatestamps < bounds[2])
+            if (length(new.members)==0)  {
+              stop("There are no timepoints in the selected time interval")
+#              x@t.id <- integer(0)
+#              x@timedatestamps <- timeDate(NA)
+#              return(x)
+            }
             x@t.id <- x@t.id[new.members]
             x@timedatestamps <- x@timedatestamps[new.members]
             return( x )
@@ -122,6 +128,8 @@ setMethod("stSubset", signature(x="stTemporal", bounds="character"),
             if (length(bounds) == 1){
               new.tds <- format(x@timedatestamps, format=format)
               new.members <- which( new.tds %in% bounds)
+              if (length(new.members)==0)  
+                stop("There are no timepoints in the selected time interval")
               x@t.id <- x@t.id[new.members]
               x@timedatestamps <- x@timedatestamps[new.members]
               return( x )
@@ -138,6 +146,8 @@ setMethod("stSubset", signature(x="stTemporal", bounds="character"),
 setMethod("stSubset", signature(x="stTemporal", bounds="integer"),
           function(x,bounds){
             new.members <- which( x@t.id %in% bounds)
+              if (length(new.members)==0)  
+                stop("There are no timepoints in the selected time interval")
             x@t.id <- x@t.id[new.members]
             x@timedatestamps <- x@timedatestamps[new.members]
             return( x )
