@@ -335,6 +335,9 @@ setMethod("summary","SpatialPointsTemporalDataFrame",
             cat("\nClass: SpatialPointsTemporalDataFrame\n")
             summary(object@spatial)
             summary(object@temporal)
+            n.miss <- sum( is.na(object@data@df))
+            n.vals <- ( ncol(object@data@df)-2) * nrow(object@data@df)
+            cat("\nMissingness: Additionally,",n.miss,"of",n.vals,"values, or about",round(n.miss/n.vals,3)*100,"% are missing\n")
             }
           )
 
