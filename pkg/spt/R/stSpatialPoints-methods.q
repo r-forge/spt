@@ -169,7 +169,7 @@ setMethod("stDist", signature(sp="SpatialPoints", type="character"),
               ## computation of earth distance...
               crds <- as.matrix(coordinates(sp))
               crd.names <- colnames(crds)
-              indx <- pmatch( upper.case(crd.names[1]), upper.case(c("lat", "long", "lats", "longs", "latitude","longitude")))
+              indx <- pmatch( upper.case(crd.names[1]), upper.case(c("lat", "long", "lats", "longs", "latitude","longitude","lattitude","lon")))
               if (is.na(indx) | length(indx)==0 )
                 stop("In order to calculate earth (great circle) distance, coordinate columns must have names 'lat' and 'long' ")
               if ( even(indx))
@@ -210,10 +210,3 @@ setMethod("stJoin", signature(x="stSpatialPoints", y="stSpatialPoints"),
           }
           )
 
-## 10/6; now it should work using inheritance...
-#setMethod("plot", signature(x="stSpatialPoints", y="missing"),
-#          function(x) { plot(x@coords) } )
-#selectMethod("plot", signature(x="stSpatialPoints", y="missing"))
-## Doesn't work; don't know why? (order of contains in class def.
-##setMethod("plot", signature(x="stSpatialPoints", y="missing"),
-##          function(x) { useNextMethod() } )

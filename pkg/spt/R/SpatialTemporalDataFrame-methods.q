@@ -472,7 +472,6 @@ setMethod("stSubset",c(x="SpatialPointsTemporalDataFrame",bounds="timeDate"),
           function(x,bounds){
             ## 1) subset the temporalal part.
             new.stt <- stSubset(x@temporal, bounds)
-
             ## TBD/Fix
             ## If null, return NA?
 
