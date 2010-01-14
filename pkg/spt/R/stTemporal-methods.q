@@ -38,6 +38,8 @@ setMethod("getTimedatestamps", signature(x="stTemporal", y="integer"),
           function(x, y, format=getTimeFormat(x) ){
             tids <- getTid(x)
             indices <- match(y, tids)
+            if (all( is.na(indices)))
+              stop("Error in getTimedatestamps; the TIDs entered do not exist in the object")
             return( format(x@timedatestamps[indices], format))
           }
           )
