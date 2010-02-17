@@ -48,7 +48,7 @@ setMethod("getTimeBySpaceMat", signature(st="SpatialGridTemporalDataFrame", coln
             colnames(dens) <- paste("sid",getSid(st),sep="_")
             ## Quickly make sure it's in order, swapping rows as necessary.
             class(dens)
-            timeOrder <- order( getTimedatestamps(st@temporal,"%Y-%m-%d %H:%M"))
+            timeOrder <- order( getTimedatestamps(st@temporal,st@temporal@timeFormat))
             dens <- dens[timeOrder,]
             return(dens)
           }
@@ -346,13 +346,17 @@ setMethod("getTimeBySpaceMat", signature(st="SpatialPointsTemporalDataFrame", co
           function(st,colname){
             n.t <- length(getTid(st))
             n.s <- length(getSid(st))
+            if ( !(colname %in% colnames( st@data@df) ) )
+              stop("Error in getTimeBySpaceMat for SpatialPointsTemporalDataFrame- colname is not in the data")
+            
+            
             dens <- t(reshape( getDataFrame(st)[c("s.id","t.id",colname)],
                               timevar="t.id", v.names=colname, idvar="s.id", direction="wide"))[2:(n.t+1),]
             tids <- unique( getDataFrame(st)$"t.id" )
             rownames(dens) <- paste("tid", tids,sep="_")
             colnames(dens) <- paste("sid", unique( getDataFrame(st)$"s.id"), sep="_" )
             ## Quickly make sure it's in order, swapping rows as necessary.
-            timeOrder <- order( getTimedatestamps(st, tids,"%Y-%m-%d %H:%M"))
+            timeOrder <- order( getTimedatestamps(st, tids,st@temporal@timeFormat))
             dens <- dens[timeOrder,]
             return(dens)
           }
@@ -420,7 +424,7 @@ setMethod("plot", signature(x="SpatialPointsTemporalDataFrame", y="character"),
               lay.mat[5:6, c(1,4)] <- 0
               layout(lay.mat)
               bColor <- plotColorGrid(long.range, lat.range, long.breaks, lat.breaks, returnbColor=TRUE)
-              points(coords, pch=19)
+              points(coords, pch=20)
               map('state', add=TRUE, interior=TRUE)
               n.s <- nrow(coords)
               bColors <- rep(NA,n.s)
@@ -434,12 +438,14 @@ setMethod("plot", signature(x="SpatialPointsTemporalDataFrame", y="character"),
               t <- length(getTid(x))
               
               if (plotType=="lines"){
-                
-                x.locs <- sort(as.numeric(difftime( getTimedatestamps(x, "%Y-%m-%d %H:%M"), min(getTimedatestamps(x)), units=units)))
+
+                timestamps <- timeDate(getTimedatestamps(x), format=getTimeFormat(x))
+                startTime <- min(timestamps)
+                x.locs <- sort(as.numeric(difftime( timestamps, startTime), units=units))
                 sub <- paste("Starting from", as.character( min(getTimedatestamps(x,"%Y-%m-%d %H:%M"))))
                 ylims <- range(tByS,na.rm=TRUE)
                 i <- 1
-                plot(x.locs, tByS[,i], type="l", col=bColors[i],xlab=paste("Time (",units,")",sep=""),ylab=y, sub=sub,ylim=ylims)
+                plot(x.locs, tByS[,i], type="l", col=bColors[i],xlab=paste("Time (",units,")",sep=""),ylab=y, sub=sub,ylim=ylims,log="y")
                 if (n.s>1){
                   for (i in 2:n.s){
                     lines(x.locs, tByS[,i], col=bColors[i])
@@ -567,7 +573,6 @@ SpatialPointsTemporalDataFrame <- function( stdf, location.col, time.col, format
     pp("Extracting the locations and times from the data.frame...",Sys.time())
   locs <- stdf[,location.col]
   tims <- as.character(stdf[,time.col])
-#  browser()
   s.id <- 1:nrow(unique(locs))  ## assumes locs is > 1!!! FIX!
   unique.locs <- unique(locs)
   if (verbose) 
